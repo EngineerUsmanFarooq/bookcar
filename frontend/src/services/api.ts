@@ -7,7 +7,7 @@
 
 // Use environment variable for API base URL
 // In Vercel: Add NEXT_PUBLIC_API_BASE_URL to your environment variables
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000';
 
 // Default request timeout (10 seconds)
 const DEFAULT_TIMEOUT = 10000;
