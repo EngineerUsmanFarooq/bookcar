@@ -1,0 +1,24 @@
+{
+  "name": "carbookin",
+  "version": "1.0.0",
+  "description": "Car Rental Platform Backend",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "dotenv": "^17.2.3",
+    "dotnet": "^1.1.4",
+    "express": "^4.21.2",
+    "mongodb": "^7.0.0",
+    "mongoose": "^7.5.0",
+    "nodemailer": "^7.0.11"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
