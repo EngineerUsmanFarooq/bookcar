@@ -12,29 +12,24 @@
       "use": "@vercel/node"
     },
     {
-      "src": "frontend/package.json",
+      "src": "package.json",
       "use": "@vercel/static-build",
       "config": {
         "distDir": "dist"
       }
     }
   ],
-  "rewrites": [
+  "routes": [
     {
-      "source": "/api/(.*)",
-      "destination": "/server/index.js"
+      "src": "/api/(.*)",
+      "dest": "server/index.js"
     },
     {
-      "source": "/assets/(.*)",
-      "destination": "/assets/$1"
+      "handle": "filesystem"
     },
     {
-      "source": "/((?!api|assets|favicon.ico|Logo.jpg|robots.txt).*\\.[a-z0-9]+)",
-      "destination": "/$1"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 }
