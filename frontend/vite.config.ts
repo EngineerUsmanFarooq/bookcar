@@ -17,7 +17,5 @@ export default defineConfig({
     },
   },
 
-  define: {
-    'import.meta.env.API_BASE_URL': JSON.stringify('http://localhost:5000/api'),
-  },
+
 });

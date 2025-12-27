@@ -9,7 +9,7 @@
 // In Vercel: Add NEXT_PUBLIC_API_BASE_URL to your environment variables
 // Use environment variable for API base URL with safe fallback
 export const API_BASE_URL = import.meta.env.VITE_API_URL ||
-  (import.meta.env.PROD ? '/api' : 'http://localhost:5000/api');
+  (typeof window !== 'undefined' && window.location.hostname !== 'localhost' ? '/api' : 'http://localhost:5000/api');
 
 // Default request timeout (10 seconds)
 const DEFAULT_TIMEOUT = 10000;
