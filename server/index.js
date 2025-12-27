@@ -34,6 +34,15 @@ app.use(cors({
 }));
 app.use(express.json());
 
+app.get('/api/auth/cleanup', async (req, res) => {
+  try {
+    const result = await OTP.deleteMany({ expiresAt: { $lt: new Date() } });
+    res.json({ message: `Cleaned up ${result.deletedCount} expired OTPs` });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/cars', require('./routes/carRoutes'));
@@ -42,17 +51,8 @@ app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/notifications', require('./routes/notificationRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
 
-// Cleanup expired OTPs every 5 minutes
-setInterval(async () => {
-  try {
-    const result = await OTP.deleteMany({ expiresAt: { $lt: new Date() } });
-    if (result.deletedCount > 0) {
-      console.log(`Cleaned up ${result.deletedCount} expired OTPs`);
-    }
-  } catch (error) {
-    console.error('Error cleaning up expired OTPs:', error);
-  }
-}, 5 * 60 * 1000); // 5 minutes
+// Note: Cleanup is now handled via the /api/auth/cleanup endpoint
+// which can be triggered by a Vercel Cron Job.
 
 const PORT = process.env.PORT || 5000;
 
