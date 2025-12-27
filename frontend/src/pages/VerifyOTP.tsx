@@ -73,19 +73,24 @@ const VerifyOTP = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <div className="dark min-h-screen bg-[#0F0F0F] text-white flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Decorative Background */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-[-20%] right-[-10%] w-[60%] h-[60%] bg-blue-600/5 rounded-full blur-[140px]"></div>
+        <div className="absolute bottom-[-20%] left-[-10%] w-[60%] h-[60%] bg-purple-600/5 rounded-full blur-[140px]"></div>
+      </div>
+      <div className="w-full max-w-md relative z-10">
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center space-x-2">
-            <img src="/Logo.jpg" alt="RentCar Logo" className="h-8 w-8 rounded" />
-            <span className="text-2xl font-bold text-gray-900">RentCar</span>
+            <img src="/Logo.jpg" alt="RentCar Logo" className="h-10 w-10 rounded-xl" />
+            <span className="text-2xl font-bold text-white">Rent<span className="text-blue-500">Car</span></span>
           </Link>
         </div>
 
-        <Card>
+        <Card className="bg-[#161616] border-white/5 shadow-2xl">
           <CardHeader>
             <CardTitle>Verify Your Email</CardTitle>
-            <CardDescription>
+            <CardDescription className="text-gray-400">
               We've sent a 6-digit OTP to {email}. Please enter it below to complete your registration.
             </CardDescription>
           </CardHeader>
@@ -110,21 +115,21 @@ const VerifyOTP = () => {
             </form>
 
             <div className="mt-6 text-center space-y-2">
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-400">
                 Didn't receive the OTP?{" "}
                 <Button
                   variant="link"
-                  className="p-0 h-auto text-blue-600 hover:underline"
+                  className="p-0 h-auto text-blue-500 hover:text-blue-400 transition-colors"
                   onClick={handleResendOTP}
                   disabled={resendLoading}
                 >
                   {resendLoading ? "Sending..." : "Resend OTP"}
                 </Button>
               </p>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-400">
                 <Button
                   variant="link"
-                  className="p-0 h-auto text-gray-600 hover:underline"
+                  className="p-0 h-auto text-gray-400 hover:text-white transition-colors"
                   onClick={() => navigate("/register")}
                 >
                   Back to Registration

@@ -58,24 +58,29 @@ const ForgotPassword = () => {
 
   if (emailSent) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex items-center justify-center p-4">
-        <div className="w-full max-w-md">
+      <div className="dark min-h-screen bg-[#0F0F0F] text-white flex items-center justify-center p-4 relative overflow-hidden">
+        {/* Decorative Background */}
+        <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+          <div className="absolute top-[-20%] right-[-10%] w-[60%] h-[60%] bg-blue-600/5 rounded-full blur-[140px]"></div>
+          <div className="absolute bottom-[-20%] left-[-10%] w-[60%] h-[60%] bg-purple-600/5 rounded-full blur-[140px]"></div>
+        </div>
+        <div className="w-full max-w-md relative z-10">
           <div className="text-center mb-8">
             <Link to="/" className="inline-flex items-center space-x-2">
-              <img src="/Logo.jpg" alt="RentCar Logo" className="h-8 w-8 rounded" />
-              <span className="text-2xl font-bold text-gray-900">RentCar</span>
+              <img src="/Logo.jpg" alt="RentCar Logo" className="h-10 w-10 rounded-xl" />
+              <span className="text-2xl font-bold text-white">Rent<span className="text-blue-500">Car</span></span>
             </Link>
           </div>
 
-          <Card>
+          <Card className="bg-[#161616] border-white/5 shadow-2xl">
             <CardHeader>
               <CardTitle>Check Your Email</CardTitle>
-              <CardDescription>
+              <CardDescription className="text-gray-400">
                 We've sent a password reset OTP to {getValues("email")}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-400">
                 Click the link below to enter your OTP and reset your password.
               </p>
               <Button asChild className="w-full">
@@ -85,7 +90,7 @@ const ForgotPassword = () => {
               </Button>
               <Button
                 variant="outline"
-                className="w-full"
+                className="w-full border-white/10 hover:bg-white/5"
                 onClick={() => setEmailSent(false)}
               >
                 Try Different Email
@@ -98,19 +103,24 @@ const ForgotPassword = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <div className="dark min-h-screen bg-[#0F0F0F] text-white flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Decorative Background */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-[-20%] right-[-10%] w-[60%] h-[60%] bg-blue-600/5 rounded-full blur-[140px]"></div>
+        <div className="absolute bottom-[-20%] left-[-10%] w-[60%] h-[60%] bg-purple-600/5 rounded-full blur-[140px]"></div>
+      </div>
+      <div className="w-full max-w-md relative z-10">
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center space-x-2">
-            <img src="/Logo.jpg" alt="RentCar Logo" className="h-8 w-8 rounded" />
-            <span className="text-2xl font-bold text-gray-900">RentCar</span>
+            <img src="/Logo.jpg" alt="RentCar Logo" className="h-10 w-10 rounded-xl" />
+            <span className="text-2xl font-bold text-white">Rent<span className="text-blue-500">Car</span></span>
           </Link>
         </div>
 
-        <Card>
+        <Card className="bg-[#161616] border-white/5 shadow-2xl">
           <CardHeader>
             <CardTitle>Forgot Password</CardTitle>
-            <CardDescription>
+            <CardDescription className="text-gray-400">
               Enter your email address and we'll send you a code to reset your password
             </CardDescription>
           </CardHeader>
@@ -135,7 +145,7 @@ const ForgotPassword = () => {
             </form>
 
             <div className="mt-6 text-center">
-              <Link to="/login" className="inline-flex items-center text-sm text-blue-600 hover:underline">
+              <Link to="/login" className="inline-flex items-center text-sm text-blue-500 hover:text-blue-400 transition-colors">
                 <ArrowLeft className="h-4 w-4 mr-1" />
                 Back to Login
               </Link>

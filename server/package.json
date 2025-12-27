@@ -1,9 +1,5 @@
 {
-<<<<<<< HEAD
-  "name": "carbookin",
-=======
-  "name": "car-rental-server",
->>>>>>> 03c61259abae1b135fd6479454898994acd3fa4b
+  "name": "carbooking",
   "version": "1.0.0",
   "description": "Car Rental Platform Backend",
   "main": "index.js",
@@ -16,7 +12,6 @@
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
     "dotenv": "^17.2.3",
-    "dotnet": "^1.1.4",
     "express": "^4.21.2",
     "mongodb": "^7.0.0",
     "mongoose": "^7.5.0",

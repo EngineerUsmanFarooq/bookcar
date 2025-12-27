@@ -5,15 +5,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
-import { Calendar, Clock, User, LogOut, Eye, Bell, Check, RefreshCw, TrendingUp, Car, MapPin, Star, Zap } from "lucide-react";
+import { Calendar, Clock, User as UserIcon, LogOut, Eye, Bell, Check, RefreshCw, TrendingUp, Car as CarIcon, MapPin, Star, Zap } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { bookingsAPI, notificationsAPI } from "@/services/api";
+import { bookingsAPI, notificationsAPI, User, Booking, Notification } from "@/services/api";
 import CarLoader from "@/components/ui/CarLoader";
 
 const Dashboard = () => {
-  const [user, setUser] = useState(null);
-  const [bookings, setBookings] = useState([]);
-  const [notifications, setNotifications] = useState([]);
+  const [user, setUser] = useState<User | null>(null);
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshingNotifications, setIsRefreshingNotifications] = useState(false);
   const [animatedStats, setAnimatedStats] = useState({
@@ -26,36 +26,55 @@ const Dashboard = () => {
   const { toast } = useToast();
 
   useEffect(() => {
+    let notificationInterval: any;
+    let welcomeTimer: any;
+
     const userData = localStorage.getItem("user");
     if (!userData) {
       navigate("/login");
       return;
     }
-    
-    const parsedUser = JSON.parse(userData);
-    if (parsedUser.role === "admin") {
-      navigate("/admin");
+
+    try {
+      const parsedUser = JSON.parse(userData);
+      if (parsedUser.role === "admin") {
+        navigate("/admin");
+        return;
+      }
+
+      // Determine user ID, supporting both `id` and `_id`
+      const userId = parsedUser.id ?? parsedUser._id;
+      if (!userId) {
+        console.warn('User ID missing, redirecting to login');
+        navigate('/login');
+        return;
+      }
+
+      setUser(parsedUser);
+      loadBookings(userId);
+      loadNotifications(userId);
+
+      // Set up polling for notifications every 30 seconds
+      notificationInterval = setInterval(() => {
+        loadNotifications(parsedUser.id);
+      }, 30000); // 30 seconds
+
+    } catch (error) {
+      console.error("Error parsing user data:", error);
+      // Optionally redirect to login on parse error
+      navigate('/login');
       return;
     }
-    
-    setUser(parsedUser);
-    loadBookings(parsedUser.id);
-    loadNotifications(parsedUser.id);
-
-    // Set up polling for notifications every 30 seconds
-    const notificationInterval = setInterval(() => {
-      loadNotifications(parsedUser.id);
-    }, 30000); // 30 seconds
 
     // Hide welcome message after 3 seconds
-    const welcomeTimer = setTimeout(() => {
+    welcomeTimer = setTimeout(() => {
       setShowWelcome(false);
     }, 3000);
 
     // Cleanup intervals on unmount
     return () => {
-      clearInterval(notificationInterval);
-      clearTimeout(welcomeTimer);
+      if (notificationInterval) clearInterval(notificationInterval);
+      if (welcomeTimer) clearTimeout(welcomeTimer);
     };
   }, [navigate]);
 
@@ -64,12 +83,12 @@ const Dashboard = () => {
       setIsLoading(true);
       const userBookings = await bookingsAPI.getByUserId(userId);
       setBookings(userBookings);
-      
+
       // Animate stats
       const total = userBookings.length;
       const active = userBookings.filter(b => b.status === "active" || b.status === "confirmed").length;
       const completed = userBookings.filter(b => b.status === "completed").length;
-      
+
       animateStats(total, active, completed);
     } catch (error) {
       toast({
@@ -133,7 +152,7 @@ const Dashboard = () => {
   const markNotificationAsRead = async (notificationId) => {
     try {
       await notificationsAPI.markAsRead(notificationId);
-      setNotifications(notifications.map(notif => 
+      setNotifications(notifications.map(notif =>
         notif._id === notificationId ? { ...notif, isRead: true } : notif
       ));
     } catch (error) {
@@ -178,7 +197,12 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div className="dark min-h-screen bg-[#0F0F0F] text-white">
+      {/* Decorative Background */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-[-20%] right-[-10%] w-[60%] h-[60%] bg-blue-600/5 rounded-full blur-[140px]"></div>
+        <div className="absolute bottom-[-20%] left-[-10%] w-[60%] h-[60%] bg-purple-600/5 rounded-full blur-[140px]"></div>
+      </div>
       {/* Welcome Animation Overlay */}
       {showWelcome && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-fade-in">
@@ -193,7 +217,7 @@ const Dashboard = () => {
       )}
 
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur-lg shadow-lg border-b border-white/20 sticky top-0 z-40">
+      <header className="bg-[#0F0F0F]/80 backdrop-blur-md border-b border-white/5 sticky top-0 z-40 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link to="/" className="flex items-center space-x-2 group">
@@ -208,12 +232,12 @@ const Dashboard = () => {
             <div className="flex items-center space-x-4">
               <Link to="/cars">
                 <Button variant="outline" className="hover:scale-105 transition-transform duration-200 shadow-md hover:shadow-lg">
-                  <Car className="h-4 w-4 mr-2" />
+                  <CarIcon className="h-4 w-4 mr-2" />
                   Browse Cars
                 </Button>
               </Link>
-              <Button 
-                variant="ghost" 
+              <Button
+                variant="ghost"
                 onClick={handleLogout}
                 className="hover:bg-red-50 hover:text-red-600 transition-colors duration-200"
               >
@@ -225,7 +249,7 @@ const Dashboard = () => {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 py-8 relative z-10">
         {/* Welcome Section */}
         <div className="mb-8 animate-fade-in-up">
           <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white shadow-2xl">
@@ -252,7 +276,7 @@ const Dashboard = () => {
           <Card className="group hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-2xl bg-gradient-to-br from-blue-500 to-blue-600 text-white border-0 animate-fade-in-up animation-delay-300">
             <CardHeader className="pb-3">
               <CardTitle className="text-lg flex items-center text-white">
-                <Car className="h-5 w-5 mr-2" />
+                <CarIcon className="h-5 w-5 mr-2" />
                 Book a Car
               </CardTitle>
               <CardDescription className="text-blue-100">Find and book your next ride</CardDescription>
@@ -266,7 +290,7 @@ const Dashboard = () => {
             </CardContent>
           </Card>
 
-          <Card className="group hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-2xl animate-fade-in-up animation-delay-400">
+          <Card className="group hover:scale-105 transition-all duration-300 shadow-2xl bg-[#161616] border-white/5 animate-fade-in-up animation-delay-400">
             <CardHeader className="pb-3">
               <CardTitle className="text-lg flex items-center">
                 <TrendingUp className="h-5 w-5 mr-2 text-blue-600" />
@@ -282,7 +306,7 @@ const Dashboard = () => {
             </CardContent>
           </Card>
 
-          <Card className="group hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-2xl animate-fade-in-up animation-delay-500">
+          <Card className="group hover:scale-105 transition-all duration-300 shadow-2xl bg-[#161616] border-white/5 animate-fade-in-up animation-delay-500">
             <CardHeader className="pb-3">
               <CardTitle className="text-lg flex items-center">
                 <MapPin className="h-5 w-5 mr-2 text-green-600" />
@@ -294,14 +318,14 @@ const Dashboard = () => {
               <div className="text-4xl font-bold text-green-600 mb-2 animate-count-up">
                 {animatedStats.activeBookings}
               </div>
-              <Progress 
-                value={(animatedStats.activeBookings / Math.max(bookings.filter(b => b.status === "active" || b.status === "confirmed").length, 1)) * 100} 
-                className="h-2" 
+              <Progress
+                value={(animatedStats.activeBookings / Math.max(bookings.filter(b => b.status === "active" || b.status === "confirmed").length, 1)) * 100}
+                className="h-2"
               />
             </CardContent>
           </Card>
 
-          <Card className="group hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-2xl animate-fade-in-up animation-delay-600">
+          <Card className="group hover:scale-105 transition-all duration-300 shadow-2xl bg-[#161616] border-white/5 animate-fade-in-up animation-delay-600">
             <CardHeader className="pb-3">
               <CardTitle className="text-lg flex items-center">
                 <Check className="h-5 w-5 mr-2 text-purple-600" />
@@ -313,9 +337,9 @@ const Dashboard = () => {
               <div className="text-4xl font-bold text-purple-600 mb-2 animate-count-up">
                 {animatedStats.completedBookings}
               </div>
-              <Progress 
-                value={(animatedStats.completedBookings / Math.max(bookings.filter(b => b.status === "completed").length, 1)) * 100} 
-                className="h-2" 
+              <Progress
+                value={(animatedStats.completedBookings / Math.max(bookings.filter(b => b.status === "completed").length, 1)) * 100}
+                className="h-2"
               />
             </CardContent>
           </Card>
@@ -323,7 +347,7 @@ const Dashboard = () => {
 
         {/* Notifications */}
         {notifications.length > 0 && (
-          <Card className="mb-8 shadow-xl border-0 bg-white/80 backdrop-blur-lg animate-fade-in-up animation-delay-700">
+          <Card className="mb-8 shadow-2xl border-white/5 bg-[#161616] border animate-fade-in-up animation-delay-700">
             <CardHeader className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-t-lg">
               <CardTitle className="flex items-center justify-between">
                 <div className="flex items-center">
@@ -355,13 +379,12 @@ const Dashboard = () => {
             <CardContent className="p-6">
               <div className="space-y-4">
                 {notifications.slice(0, 5).map((notification, index) => (
-                  <div 
-                    key={notification._id} 
-                    className={`p-4 rounded-xl border transition-all duration-300 hover:shadow-lg animate-slide-in-right ${
-                      notification.isRead 
-                        ? 'bg-gray-50/80 border-gray-200 hover:bg-gray-100/80' 
-                        : 'bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200 hover:from-blue-100 hover:to-purple-100'
-                    }`}
+                  <div
+                    key={notification._id}
+                    className={`p-4 rounded-xl border transition-all duration-300 hover:shadow-lg animate-slide-in-right ${notification.isRead
+                      ? 'bg-gray-50/80 border-gray-200 hover:bg-gray-100/80'
+                      : 'bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200 hover:from-blue-100 hover:to-purple-100'
+                      }`}
                     style={{ animationDelay: `${index * 100}ms` }}
                   >
                     <div className="flex justify-between items-start">
@@ -377,9 +400,9 @@ const Dashboard = () => {
                         </div>
                       </div>
                       {!notification.isRead && (
-                        <Button 
-                          size="sm" 
-                          variant="ghost" 
+                        <Button
+                          size="sm"
+                          variant="ghost"
                           onClick={() => markNotificationAsRead(notification._id)}
                           className="ml-3 hover:bg-green-100 hover:text-green-600 transition-colors duration-200 group"
                         >
@@ -395,7 +418,7 @@ const Dashboard = () => {
         )}
 
         {/* Recent Bookings */}
-        <Card className="shadow-2xl border-0 bg-white/90 backdrop-blur-lg animate-fade-in-up animation-delay-800">
+        <Card className="shadow-2xl border-white/5 bg-[#161616] border animate-fade-in-up animation-delay-800">
           <CardHeader className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-t-lg">
             <CardTitle className="flex items-center text-2xl">
               <div className="relative mr-3">
@@ -407,8 +430,8 @@ const Dashboard = () => {
               </span>
             </CardTitle>
             <CardDescription className="text-gray-600 text-base">
-              {bookings.length === 0 
-                ? "You haven't made any bookings yet. Start your journey!" 
+              {bookings.length === 0
+                ? "You haven't made any bookings yet. Start your journey!"
                 : `You have ${bookings.length} booking${bookings.length !== 1 ? 's' : ''} in total.`
               }
             </CardDescription>
@@ -417,13 +440,13 @@ const Dashboard = () => {
             {bookings.length === 0 ? (
               <div className="text-center py-12 animate-fade-in-up">
                 <div className="w-24 h-24 bg-gradient-to-r from-blue-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce">
-                  <Car className="h-12 w-12 text-blue-600" />
+                  <CarIcon className="h-12 w-12 text-blue-600" />
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-3">No bookings yet</h3>
                 <p className="text-gray-600 mb-6 text-lg">Ready to hit the road? Book your first car!</p>
                 <Link to="/cars">
                   <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
-                    <Car className="h-5 w-5 mr-2" />
+                    <CarIcon className="h-5 w-5 mr-2" />
                     Browse Cars
                   </Button>
                 </Link>
@@ -431,33 +454,33 @@ const Dashboard = () => {
             ) : (
               <div className="space-y-6">
                 {bookings.map((booking, index) => (
-                  <div 
-                    key={booking._id} 
-                    className="group border-0 rounded-2xl p-6 shadow-lg hover:shadow-2xl bg-gradient-to-r from-white to-gray-50 hover:from-blue-50 hover:to-purple-50 transition-all duration-500 transform hover:scale-[1.02] animate-slide-in-up"
+                  <div
+                    key={booking._id}
+                    className="group border border-white/5 rounded-2xl p-6 shadow-2xl bg-white/5 hover:bg-white/10 transition-all duration-500 transform hover:scale-[1.02] animate-slide-in-up"
                     style={{ animationDelay: `${index * 150}ms` }}
                   >
                     <div className="flex justify-between items-start mb-4">
                       <div className="flex items-center space-x-4">
                         <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                          <Car className="h-6 w-6 text-white" />
+                          <CarIcon className="h-6 w-6 text-white" />
                         </div>
                         <div>
                           <h4 className="font-bold text-xl text-gray-900 group-hover:text-blue-600 transition-colors duration-300">
-                            {booking.carId?.name || 'Unknown Car'}
+                            {(typeof booking.carId === 'object' && booking.carId?.name) || 'Unknown Car'}
                           </h4>
                           <p className="text-gray-600 text-sm font-medium">
                             Booking #{booking._id.slice(-8).toUpperCase()}
                           </p>
                         </div>
                       </div>
-                      <Badge 
+                      <Badge
                         variant={getStatusColor(booking.status)}
                         className="px-4 py-2 text-sm font-semibold shadow-md animate-pulse"
                       >
                         {booking.status.toUpperCase()}
                       </Badge>
                     </div>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                       <div className="flex items-center space-x-3 p-3 bg-white/60 rounded-lg group-hover:bg-white/80 transition-colors duration-300">
                         <Calendar className="h-5 w-5 text-blue-600" />
@@ -478,7 +501,7 @@ const Dashboard = () => {
                         </div>
                       </div>
                       <div className="flex items-center space-x-3 p-3 bg-white/60 rounded-lg group-hover:bg-white/80 transition-colors duration-300">
-                        <User className="h-5 w-5 text-purple-600" />
+                        <UserIcon className="h-5 w-5 text-purple-600" />
                         <div>
                           <p className="text-xs text-gray-500 font-medium">SERVICE</p>
                           <span className="text-sm font-semibold text-gray-900">
@@ -487,7 +510,7 @@ const Dashboard = () => {
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="flex justify-between items-center pt-4 border-t border-gray-200">
                       <div className="flex items-center space-x-2">
                         <span className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
@@ -497,8 +520,8 @@ const Dashboard = () => {
                       </div>
                       <Dialog>
                         <DialogTrigger asChild>
-                          <Button 
-                            variant="outline" 
+                          <Button
+                            variant="outline"
                             size="sm"
                             className="hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600 transition-all duration-300 group-hover:scale-105"
                           >
@@ -509,7 +532,7 @@ const Dashboard = () => {
                         <DialogContent className="max-w-2xl">
                           <DialogHeader>
                             <DialogTitle className="flex items-center text-xl">
-                              <Car className="h-6 w-6 mr-2 text-blue-600" />
+                              <CarIcon className="h-6 w-6 mr-2 text-blue-600" />
                               Booking Details
                             </DialogTitle>
                             <DialogDescription>
@@ -522,27 +545,27 @@ const Dashboard = () => {
                               <div className="grid grid-cols-2 gap-4 text-sm">
                                 <div>
                                   <p className="font-semibold text-gray-700">Car:</p>
-                                  <p className="text-gray-900">{booking.carId?.name || 'Unknown Car'}</p>
+                                  <p className="text-gray-900">{(typeof booking.carId === 'object' ? booking.carId?.name : '') || 'Unknown Car'}</p>
                                 </div>
                                 <div>
                                   <p className="font-semibold text-gray-700">Model:</p>
-                                  <p className="text-gray-900">{booking.carId?.model || 'N/A'}</p>
+                                  <p className="text-gray-900">{(typeof booking.carId === 'object' ? booking.carId?.model : '') || 'N/A'}</p>
                                 </div>
                                 <div>
                                   <p className="font-semibold text-gray-700">Category:</p>
-                                  <p className="text-gray-900">{booking.carId?.category || 'N/A'}</p>
+                                  <p className="text-gray-900">{(typeof booking.carId === 'object' ? booking.carId?.category : '') || 'N/A'}</p>
                                 </div>
                                 <div>
                                   <p className="font-semibold text-gray-700">Transmission:</p>
-                                  <p className="text-gray-900">{booking.carId?.transmission || 'N/A'}</p>
+                                  <p className="text-gray-900">{(typeof booking.carId === 'object' ? booking.carId?.transmission : '') || 'N/A'}</p>
                                 </div>
                                 <div>
                                   <p className="font-semibold text-gray-700">Seats:</p>
-                                  <p className="text-gray-900">{booking.carId?.seats || 'N/A'}</p>
+                                  <p className="text-gray-900">{(typeof booking.carId === 'object' ? booking.carId?.seats : '') || 'N/A'}</p>
                                 </div>
                               </div>
                             </div>
-                            
+
                             <div className="bg-gradient-to-r from-green-50 to-blue-50 p-4 rounded-lg">
                               <h4 className="font-bold mb-3 text-lg text-gray-900">📅 Booking Information</h4>
                               <div className="grid grid-cols-2 gap-4 text-sm">

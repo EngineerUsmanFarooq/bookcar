@@ -7,7 +7,9 @@
 
 // Use environment variable for API base URL
 // In Vercel: Add NEXT_PUBLIC_API_BASE_URL to your environment variables
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+// Use environment variable for API base URL with safe fallback
+export const API_BASE_URL = import.meta.env.VITE_API_URL ||
+  (import.meta.env.PROD ? '/api' : 'http://localhost:5000/api');
 
 // Default request timeout (10 seconds)
 const DEFAULT_TIMEOUT = 10000;
@@ -16,12 +18,12 @@ const DEFAULT_TIMEOUT = 10000;
 // TYPES
 // ========================
 
-interface LoginData {
+export interface LoginData {
   email: string;
   password: string;
 }
 
-interface RegisterData {
+export interface RegisterData {
   name: string;
   email: string;
   password: string;
@@ -29,45 +31,58 @@ interface RegisterData {
   role?: string;
 }
 
-interface User {
-  id: string;
+export interface User {
+  id?: string; // original field, optional now
+  _id?: string; // added for compatibility
   name: string;
   email: string;
   role: string;
   phone?: string;
+  status?: 'active' | 'inactive' | 'pending';
 }
 
-interface Car {
-  id: string;
+export interface Car {
+  _id: string; // Changed from id to _id
   name: string;
   brand: string;
   model: string;
   year: number;
   price: number;
-  available: boolean;
+  pricePerHour: number; // Added
+  available: boolean | number; // Updated to handle number count
   image?: string;
+  features?: string[]; // Added
+  transmission?: string; // Added
+  seats?: number; // Added
+  category?: string; // Added
+  quantity?: number; // Added
 }
 
-interface Booking {
-  id: string;
+export interface Booking {
+  _id: string; // Changed from id to _id
   userId: string;
-  carId: string;
+  carId: string | Car; // Changed to allow populated Car
   startDate: string;
   endDate: string;
-  totalPrice: number;
-  status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
+  startTime?: string; // Added
+  endTime?: string; // Added
+  totalAmount: number; // Changed from totalPrice
+  status: 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'active'; // Added active
+  needDriver?: boolean; // Added
+  driverContact?: string; // Added
+  createdAt: string; // Added
 }
 
-interface Notification {
-  id: string;
+export interface Notification {
+  _id: string; // Changed from id to _id
   userId: string;
   title: string;
   message: string;
-  read: boolean;
+  isRead: boolean; // Changed from read
   createdAt: string;
 }
 
-interface ApiResponse<T = any> {
+export interface ApiResponse<T = any> {
   success: boolean;
   data?: T;
   message?: string;
@@ -82,26 +97,26 @@ interface ApiResponse<T = any> {
  * Enhanced API request helper with timeout, error handling, and retry logic
  */
 const apiRequest = async <T = any>(
-  endpoint: string, 
-  options: RequestInit = {}
+  endpoint: string,
+  options: Omit<RequestInit, 'body'> & { body?: any } = {}
 ): Promise<T> => {
   const url = `${API_BASE_URL}${endpoint}`;
-  
+
   // Default headers
   const defaultHeaders: Record<string, string> = {
     'Content-Type': 'application/json',
   };
-  
+
   // Add Authorization header if token exists
   const token = localStorage.getItem('auth_token');
   if (token) {
     defaultHeaders['Authorization'] = `Bearer ${token}`;
   }
-  
+
   // Create controller for timeout
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), DEFAULT_TIMEOUT);
-  
+
   try {
     const config: RequestInit = {
       method: options.method || 'GET',
@@ -114,21 +129,21 @@ const apiRequest = async <T = any>(
       credentials: 'include', // Important for cookies if using session-based auth
       mode: 'cors', // Explicitly set CORS mode
     };
-    
+
     const response = await fetch(url, config);
     clearTimeout(timeoutId);
-    
+
     // Handle HTTP errors
     if (!response.ok) {
       let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
-      
+
       try {
         const errorData = await response.json();
         errorMessage = errorData.message || errorMessage;
       } catch {
         // If response is not JSON, use status text
       }
-      
+
       // Special handling for common status codes
       if (response.status === 401) {
         // Token expired or invalid - redirect to login
@@ -136,38 +151,38 @@ const apiRequest = async <T = any>(
         window.location.href = '/login';
         throw new Error('Session expired. Please login again.');
       }
-      
+
       if (response.status === 403) {
         throw new Error('You do not have permission to perform this action.');
       }
-      
+
       if (response.status === 404) {
         throw new Error('The requested resource was not found.');
       }
-      
+
       if (response.status >= 500) {
         throw new Error('Server error. Please try again later.');
       }
-      
+
       throw new Error(errorMessage);
     }
-    
+
     // Parse successful response
     const data = await response.json();
     return data;
-    
+
   } catch (error: any) {
     clearTimeout(timeoutId);
-    
+
     // Handle specific error types
     if (error.name === 'AbortError') {
       throw new Error('Request timeout. Please check your connection and try again.');
     }
-    
+
     if (error.name === 'TypeError' && error.message.includes('fetch')) {
       throw new Error('Network error. Please check your internet connection.');
     }
-    
+
     console.error(`API request failed for ${url}:`, error);
     throw error;
   }
@@ -187,23 +202,23 @@ export const authAPI = {
       method: 'POST',
       body: data,
     });
-    
+
     // Store token if received
     if (response.token) {
       localStorage.setItem('auth_token', response.token);
     }
-    
+
     return response;
   },
-  
+
   /**
    * Register new user
    */
   register: async (
-    name: string, 
-    email: string, 
-    password: string, 
-    phone?: string, 
+    name: string,
+    email: string,
+    password: string,
+    phone?: string,
     role = 'user'
   ): Promise<{ user: User; token: string }> => {
     const data: RegisterData = { name, email, password, phone, role };
@@ -211,19 +226,19 @@ export const authAPI = {
       method: 'POST',
       body: data,
     });
-    
+
     // Store token if received
     if (response.token) {
       localStorage.setItem('auth_token', response.token);
     }
-    
+
     return response;
   },
 
   /**
    * Verify OTP
    */
-  verifyOTP: async (email: string, otp: string): Promise<{ verified: boolean; message: string }> => {
+  verifyOTP: async (email: string, otp: string): Promise<{ user: User; message?: string }> => {
     const data = { email, otp };
     return apiRequest('/auth/verify-otp', {
       method: 'POST',
@@ -234,7 +249,7 @@ export const authAPI = {
   /**
    * Request password reset
    */
-  forgotPassword: async (email: string): Promise<{ sent: boolean; message: string }> => {
+  forgotPassword: async (email: string): Promise<{ message: string; email: string }> => {
     const data = { email };
     return apiRequest('/auth/forgot-password', {
       method: 'POST',
@@ -245,7 +260,7 @@ export const authAPI = {
   /**
    * Reset password with OTP
    */
-  resetPassword: async (email: string, otp: string, newPassword: string): Promise<{ reset: boolean; message: string }> => {
+  resetPassword: async (email: string, otp: string, newPassword: string): Promise<{ message: string }> => {
     const data = { email, otp, newPassword };
     return apiRequest('/auth/reset-password', {
       method: 'POST',
@@ -295,31 +310,31 @@ export const carsAPI = {
   getAll: async (): Promise<Car[]> => {
     return apiRequest<Car[]>('/cars');
   },
-  
+
   /**
    * Get car by ID
    */
   getById: async (id: string): Promise<Car> => {
     return apiRequest<Car>(`/cars/${id}`);
   },
-  
+
   /**
    * Get available cars within date range
    */
   getAvailable: async (startDate: string, endDate: string): Promise<Car[]> => {
     return apiRequest<Car[]>(`/cars/available?startDate=${startDate}&endDate=${endDate}`);
   },
-  
+
   /**
    * Create new car (admin only)
    */
-  create: async (carData: Omit<Car, 'id'>): Promise<Car> => {
+  create: async (carData: Omit<Car, '_id'>): Promise<Car> => {
     return apiRequest<Car>('/cars', {
       method: 'POST',
       body: carData,
     });
   },
-  
+
   /**
    * Update car (admin only)
    */
@@ -329,7 +344,7 @@ export const carsAPI = {
       body: carData,
     });
   },
-  
+
   /**
    * Delete car (admin only)
    */
@@ -355,7 +370,7 @@ export const bookingsAPI = {
   /**
    * Create new booking
    */
-  create: async (bookingData: Omit<Booking, 'id' | 'status'>): Promise<Booking> => {
+  create: async (bookingData: Omit<Booking, '_id' | 'status' | 'createdAt'>): Promise<Booking> => {
     return apiRequest<Booking>('/bookings', {
       method: 'POST',
       body: bookingData,
@@ -430,14 +445,14 @@ export const usersAPI = {
   getAll: async (): Promise<User[]> => {
     return apiRequest<User[]>('/users');
   },
-  
+
   /**
    * Get user by ID
    */
   getById: async (id: string): Promise<User> => {
     return apiRequest<User>(`/users/${id}`);
   },
-  
+
   /**
    * Update user profile
    */
@@ -486,17 +501,17 @@ export const notificationsAPI = {
   getMyNotifications: async (): Promise<Notification[]> => {
     return apiRequest<Notification[]>('/notifications/my-notifications');
   },
-  
+
   /**
    * Create notification (admin/system only)
    */
-  create: async (notificationData: Omit<Notification, 'id' | 'createdAt'>): Promise<Notification> => {
+  create: async (notificationData: Omit<Notification, '_id' | 'createdAt'>): Promise<Notification> => {
     return apiRequest<Notification>('/notifications', {
       method: 'POST',
       body: notificationData,
     });
   },
-  
+
   /**
    * Mark notification as read
    */
@@ -540,8 +555,8 @@ export const utilsAPI = {
   /**
    * Get API configuration
    */
-  getConfig: async (): Promise<{ 
-    apiVersion: string; 
+  getConfig: async (): Promise<{
+    apiVersion: string;
     environment: string;
     corsEnabled: boolean;
   }> => {
@@ -554,7 +569,7 @@ export const utilsAPI = {
 // ========================
 
 let isRefreshing = false;
-let failedQueue: Array<{resolve: (value: any) => void, reject: (reason?: any) => void}> = [];
+let failedQueue: Array<{ resolve: (value: any) => void, reject: (reason?: any) => void }> = [];
 
 const processQueue = (error: any, token: string | null = null) => {
   failedQueue.forEach(prom => {

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Eye, EyeOff, Users, Shield, ArrowRight, Mail, Lock } from "lucide-react";
+import { Eye, EyeOff, Users, Shield, ArrowRight, Mail, Lock, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { authAPI } from "@/services/api";
 
@@ -67,136 +67,114 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 relative overflow-hidden flex items-center justify-center p-4">
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-3xl animate-float"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-purple-400/20 to-pink-400/20 rounded-full blur-3xl animate-float-delayed"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-cyan-400/10 to-blue-400/10 rounded-full blur-3xl animate-pulse"></div>
+    <div className="dark min-h-screen bg-[#0F0F0F] text-white selection:bg-blue-500/30 flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Decorative Background */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-[-20%] right-[-10%] w-[60%] h-[60%] bg-blue-600/5 rounded-full blur-[140px]"></div>
+        <div className="absolute bottom-[-20%] left-[-10%] w-[60%] h-[60%] bg-purple-600/5 rounded-full blur-[140px]"></div>
       </div>
 
-      {/* Header */}
+      {/* Header/Logo */}
       <div className="absolute top-0 left-0 right-0 z-20">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <Link to="/" className="flex items-center space-x-2 group">
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <Link to="/" className="flex items-center space-x-3 group w-fit">
             <div className="relative">
-              <img src="/Logo.jpg" alt="Logo" className="h-10 w-10 rounded-lg shadow-lg group-hover:scale-110 transition-transform duration-300" />
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <img src="/Logo.jpg" alt="Logo" className="h-10 w-10 rounded-xl shadow-2xl transition-all group-hover:scale-105" />
+              <div className="absolute inset-0 bg-blue-500/20 rounded-xl filter blur-sm opacity-0 group-hover:opacity-100 transition-opacity"></div>
             </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">RentCar</span>
+            <span className="text-2xl font-bold tracking-tight text-white">
+              Rent<span className="text-blue-500">Car</span>
+            </span>
           </Link>
         </div>
       </div>
 
-      <div className="w-full max-w-md relative z-10">
-        {/* Welcome Badge */}
-        <div className={`text-center mb-8 transition-all duration-1000 ${showForm ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-          <div className="inline-flex items-center space-x-2 bg-white/80 backdrop-blur-sm rounded-full px-6 py-3 shadow-lg border border-white/20">
-            <Shield className="h-5 w-5 text-blue-600" />
-            <span className="text-sm font-medium text-gray-700">Welcome Back</span>
+      <div className="w-full max-w-lg relative z-10 transition-all duration-1000 transform scale-100">
+        {/* Welcome Section */}
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center space-x-2 bg-blue-500/10 rounded-full px-4 py-1.5 border border-blue-500/20 mb-6">
+            <Shield className="h-3.5 w-3.5 text-blue-400" />
+            <span className="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Secure Access</span>
           </div>
+          <h1 className="text-4xl font-bold tracking-tight mb-3">Welcome <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600">Back</span></h1>
+          <p className="text-gray-500 font-light text-sm">Please enter your credentials to access your mobility workspace.</p>
         </div>
 
         {/* Login Card */}
-        <Card className={`bg-white/80 backdrop-blur-sm border-white/20 shadow-2xl transition-all duration-1000 ${showForm ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-95'}`}>
-          <CardHeader className="text-center space-y-2">
-            <div className="mx-auto bg-gradient-to-br from-blue-500 to-purple-600 rounded-full p-3 w-16 h-16 flex items-center justify-center shadow-lg">
-              <Users className="h-8 w-8 text-white" />
-            </div>
-            <CardTitle className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
-              Sign In to Your Account
-            </CardTitle>
-            <CardDescription className="text-gray-600">
-              Enter your credentials to access your dashboard
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-gray-700 font-medium flex items-center">
-                  <Mail className="h-4 w-4 mr-2 text-blue-500" />
-                  Email Address
-                </Label>
-                <div className="relative">
+        <Card className="bg-[#161616] border-white/5 rounded-[2.5rem] overflow-hidden shadow-2xl">
+          <CardContent className="p-10">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-3">
+                <Label htmlFor="email" className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Email Authorization</Label>
+                <div className="relative group">
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-600 group-focus-within:text-blue-500 transition-colors" />
                   <Input
                     id="email"
                     type="email"
-                    placeholder="Enter your email"
+                    placeholder="name@company.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="bg-white/50 backdrop-blur-sm border-white/20 focus:border-blue-500 focus:ring-blue-500/20 transition-all duration-300"
+                    className="bg-white/5 border-white/5 h-14 pl-12 rounded-2xl focus:border-blue-500/50 focus:ring-blue-500/20 transition-all text-sm placeholder:text-gray-600"
                   />
                 </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="password" className="text-gray-700 font-medium flex items-center">
-                  <Lock className="h-4 w-4 mr-2 text-blue-500" />
-                  Password
-                </Label>
-                <div className="relative">
+
+              <div className="space-y-3">
+                <div className="flex justify-between items-center ml-1">
+                  <Label htmlFor="password" className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Secret Key</Label>
+                  <Link to="/forgot-password" className="text-[10px] font-bold text-blue-500 uppercase tracking-widest hover:text-blue-400 transition-colors">Recover Password</Link>
+                </div>
+                <div className="relative group">
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-600 group-focus-within:text-blue-500 transition-colors" />
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="Enter your password"
+                    placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    className="bg-white/50 backdrop-blur-sm border-white/20 focus:border-blue-500 focus:ring-blue-500/20 transition-all duration-300 pr-12"
+                    className="bg-white/5 border-white/5 h-14 pl-12 pr-12 rounded-2xl focus:border-blue-500/50 focus:ring-blue-500/20 transition-all text-sm placeholder:text-gray-600"
                   />
                   <Button
                     type="button"
                     variant="ghost"
-                    size="sm"
-                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                    size="icon"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-600 hover:text-white hover:bg-transparent"
                     onClick={() => setShowPassword(!showPassword)}
                   >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4 text-gray-500 hover:text-gray-700 transition-colors duration-200" />
-                    ) : (
-                      <Eye className="h-4 w-4 text-gray-500 hover:text-gray-700 transition-colors duration-200" />
-                    )}
+                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                   </Button>
                 </div>
               </div>
+
               <Button
                 type="submit"
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 group"
+                className="w-full h-14 bg-blue-600 hover:bg-blue-700 rounded-2xl font-bold text-sm shadow-xl shadow-blue-500/20 transition-all group active:scale-[0.98]"
                 disabled={isLoading}
               >
                 {isLoading ? (
-                  <div className="flex items-center">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Signing in...
-                  </div>
+                  <RefreshCw className="h-5 w-5 animate-spin" />
                 ) : (
-                  <div className="flex items-center">
-                    Sign In
-                    <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
-                  </div>
+                  <span className="flex items-center">
+                    Establish Session <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                  </span>
                 )}
               </Button>
             </form>
 
-            <div className="space-y-4 pt-4 border-t border-gray-200/50">
-              <div className="text-center">
-                <Link to="/forgot-password" className="text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors duration-300 hover:underline">
-                  Forgot your password?
-                </Link>
-              </div>
-              <div className="text-center">
-                <p className="text-sm text-gray-600">
-                  Don't have an account?{" "}
-                  <Link to="/register" className="text-blue-600 hover:text-blue-700 font-medium transition-colors duration-300 hover:underline">
-                    Create one now
-                  </Link>
-                </p>
-              </div>
+            <div className="mt-10 pt-8 border-t border-white/5 text-center">
+              <p className="text-gray-500 text-sm font-light">
+                New to the platform?{" "}
+                <Link to="/register" className="text-white font-bold hover:text-blue-500 transition-colors">Begin Onboarding</Link>
+              </p>
             </div>
-
-         
           </CardContent>
         </Card>
+
+        <p className="mt-8 text-center text-[10px] text-gray-600 uppercase tracking-[0.2em] font-bold">
+          &copy; 2025 RentCar Security Protocol. Encrypted Connectivity Verified.
+        </p>
       </div>
     </div>
   );

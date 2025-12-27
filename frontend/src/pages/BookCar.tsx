@@ -8,16 +8,16 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Calendar, Clock, Users, DollarSign, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { carsAPI, bookingsAPI } from "@/services/api";
+import { carsAPI, bookingsAPI, User, Car } from "@/services/api";
 import CarLoader from "@/components/ui/CarLoader";
 
 const BookCar = () => {
   const { carId } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-  
-  const [user, setUser] = useState(null);
-  const [car, setCar] = useState(null);
+
+  const [user, setUser] = useState<User | null>(null);
+  const [car, setCar] = useState<Car | null>(null);
   const [bookingData, setBookingData] = useState({
     startDate: "",
     startTime: "",
@@ -36,7 +36,14 @@ const BookCar = () => {
       navigate("/login");
       return;
     }
-    setUser(JSON.parse(userData));
+    try {
+      setUser(JSON.parse(userData));
+    } catch (error) {
+      console.error("Error parsing user data:", error);
+      localStorage.removeItem("user");
+      navigate("/login");
+      return;
+    }
 
     const fetchCar = async () => {
       try {
@@ -70,7 +77,7 @@ const BookCar = () => {
 
     const startDateTime = new Date(`${bookingData.startDate}T${bookingData.startTime}`);
     const endDateTime = new Date(`${bookingData.endDate}T${bookingData.endTime}`);
-    
+
     if (endDateTime <= startDateTime) {
       setTotalAmount(0);
       return;
@@ -78,12 +85,12 @@ const BookCar = () => {
 
     const diffInMs = endDateTime.getTime() - startDateTime.getTime();
     const diffInHours = Math.ceil(diffInMs / (1000 * 60 * 60));
-    
+
     let total = diffInHours * car.pricePerHour;
     if (bookingData.needDriver) {
       total += diffInHours * 200; // $200 per hour for driver
     }
-    
+
     setTotalAmount(total);
   };
 
@@ -108,7 +115,9 @@ const BookCar = () => {
       return;
     }
 
-    if (car.available <= 0) {
+    const isCarUnavailable = typeof car.available === 'number' ? car.available <= 0 : !car.available;
+
+    if (isCarUnavailable) {
       toast({
         title: "Car unavailable",
         description: "This car is currently not available for booking.",
@@ -120,7 +129,7 @@ const BookCar = () => {
 
     try {
       const booking = {
-        userId: user.id,
+        userId: user.id || user._id,
         carId: car._id,
         startDate: bookingData.startDate,
         endDate: bookingData.endDate,
@@ -129,7 +138,6 @@ const BookCar = () => {
         totalAmount,
         needDriver: bookingData.needDriver,
         driverContact: bookingData.needDriver ? bookingData.driverContact : undefined,
-        status: "pending"
       };
 
       await bookingsAPI.create(booking);
@@ -153,35 +161,40 @@ const BookCar = () => {
 
   if (isLoadingCar || !car || !user) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen bg-[#0F0F0F] flex items-center justify-center">
         <div className="text-center">
           <CarLoader className="mb-6" />
-          <p className="text-gray-600 text-lg">Loading car details...</p>
+          <p className="text-gray-400 text-lg">Loading car details...</p>
         </div>
       </div>
     );
   }
 
-  const isUnavailable = car.available <= 0;
+  const isUnavailable = typeof car.available === 'number' ? car.available <= 0 : !car.available;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="dark min-h-screen bg-[#0F0F0F] text-white">
+      {/* Decorative Background */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-[-20%] right-[-10%] w-[60%] h-[60%] bg-blue-600/5 rounded-full blur-[140px]"></div>
+        <div className="absolute bottom-[-20%] left-[-10%] w-[60%] h-[60%] bg-purple-600/5 rounded-full blur-[140px]"></div>
+      </div>
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-[#0F0F0F]/80 backdrop-blur-md border-b border-white/5 sticky top-0 z-40 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <Link to="/cars" className="flex items-center space-x-2">
-              <ArrowLeft className="h-5 w-5" />
-              <img src="/Logo.jpg" alt="Logo" className="h-12 w-12 rounded" />
+            <Link to="/cars" className="flex items-center space-x-2 group">
+              <ArrowLeft className="h-5 w-5 group-hover:-translate-x-1 transition-transform" />
+              <img src="/Logo.jpg" alt="Logo" className="h-10 w-10 rounded-xl" />
             </Link>
             <Link to="/dashboard">
-              <Button variant="outline">Dashboard</Button>
+              <Button variant="outline" className="border-white/10 hover:bg-white/5 transition-colors">Dashboard</Button>
             </Link>
           </div>
         </div>
       </header>
 
-      <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto px-4 py-8 relative z-10">
         {/* Availability Warning */}
         {isUnavailable && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
@@ -196,15 +209,15 @@ const BookCar = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Car Details */}
-          <Card>
+          <Card className="bg-[#161616] border-white/5 shadow-2xl overflow-hidden">
             <CardHeader>
               <CardTitle>Book {car.name}</CardTitle>
               <CardDescription>Complete your booking details</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="aspect-video overflow-hidden rounded-lg mb-4">
-                <img 
-                  src={car.image} 
+                <img
+                  src={car.image}
                   alt={car.name}
                   className="w-full h-full object-cover"
                 />
@@ -232,7 +245,7 @@ const BookCar = () => {
           </Card>
 
           {/* Booking Form */}
-          <Card>
+          <Card className="bg-[#161616] border-white/5 shadow-2xl overflow-hidden">
             <CardHeader>
               <CardTitle>Booking Details</CardTitle>
               <CardDescription>Select your preferred dates and times</CardDescription>

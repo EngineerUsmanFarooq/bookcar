@@ -11,11 +11,7 @@
     "dev:server": "npm run dev --prefix server",
 
     "build": "npm run build --prefix client",
-<<<<<<< HEAD
     "vercel-build": "npm run build --prefix frontend",
-=======
->>>>>>> 03c61259abae1b135fd6479454898994acd3fa4b
-
     "start": "npm start --prefix server"
   },
   "devDependencies": {

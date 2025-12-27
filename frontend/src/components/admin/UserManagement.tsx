@@ -41,14 +41,14 @@ const UserManagement = ({ onStatsUpdate }) => {
 
   const filterUsers = () => {
     let filtered = [...users];
-    
+
     if (searchTerm) {
-      filtered = filtered.filter(user => 
+      filtered = filtered.filter(user =>
         user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         user.email.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-    
+
     setFilteredUsers(filtered);
   };
 
@@ -56,16 +56,16 @@ const UserManagement = ({ onStatsUpdate }) => {
     try {
       const user = users.find(u => u._id === userId);
       const newStatus = user.status === "active" ? "suspended" : "active";
-      
+
       await usersAPI.update(userId, { status: newStatus });
-      
-      const updatedUsers = users.map(u => 
+
+      const updatedUsers = users.map(u =>
         u._id === userId ? { ...u, status: newStatus } : u
       );
-      
+
       setUsers(updatedUsers);
       onStatsUpdate();
-      
+
       toast({
         title: "User status updated",
         description: `${user.name} has been ${newStatus === "active" ? "activated" : "suspended"}.`,
@@ -87,7 +87,7 @@ const UserManagement = ({ onStatsUpdate }) => {
         message,
         type
       });
-      
+
       toast({
         title: "Notification sent",
         description: `Message sent to user successfully`,
@@ -102,8 +102,18 @@ const UserManagement = ({ onStatsUpdate }) => {
   };
 
   const getUserBookings = (userId) => {
-    const bookings = JSON.parse(localStorage.getItem("bookings") || "[]");
-    return bookings.filter(booking => booking.userId === userId);
+    let bookings = [];
+    try {
+      const storedBookings = localStorage.getItem("bookings");
+      if (storedBookings) {
+        bookings = JSON.parse(storedBookings);
+      }
+    } catch (error) {
+      console.error("Error parsing bookings data:", error);
+      // Don't clear local storage here as it might be a temporary glitch or partial corruption
+    }
+    const safeBookings = Array.isArray(bookings) ? bookings : [];
+    return safeBookings.filter(booking => booking.userId === userId);
   };
 
   if (isLoading) {
@@ -168,38 +178,38 @@ const UserManagement = ({ onStatsUpdate }) => {
                     <Mail className="h-4 w-4 mr-2" />
                     {user.email}
                   </div>
-                  
+
                   {user.phone && (
                     <div className="flex items-center text-sm text-gray-600">
                       <Phone className="h-4 w-4 mr-2" />
                       {user.phone}
                     </div>
                   )}
-                  
+
                   <div className="flex items-center text-sm text-gray-600">
                     <Calendar className="h-4 w-4 mr-2" />
                     Joined: {new Date(user.joinDate).toLocaleDateString()}
                   </div>
-                  
+
                   <div className="flex items-center text-sm text-gray-600">
                     <Users className="h-4 w-4 mr-2" />
                     {userBookings.length} total bookings
                   </div>
-                  
+
                   <Badge variant="secondary">
                     {user.role}
                   </Badge>
                 </div>
-                
+
                 <div className="flex space-x-2 mt-4">
-                  <Button 
-                    size="sm" 
+                  <Button
+                    size="sm"
                     variant={user.status === "active" ? "destructive" : "default"}
                     onClick={() => toggleUserStatus(user._id)}
                   >
                     {user.status === "active" ? "Suspend" : "Activate"}
                   </Button>
-                  
+
                   <Dialog>
                     <DialogTrigger asChild>
                       <Button size="sm" variant="outline">
@@ -225,7 +235,7 @@ const UserManagement = ({ onStatsUpdate }) => {
                             <p><strong>Join Date:</strong> {new Date(user.joinDate).toLocaleDateString()}</p>
                           </div>
                         </div>
-                        
+
                         <div>
                           <h4 className="font-semibold mb-2">Booking History</h4>
                           <div className="space-y-2">
@@ -246,16 +256,16 @@ const UserManagement = ({ onStatsUpdate }) => {
                             )}
                           </div>
                         </div>
-                        
+
                         <div className="flex space-x-2">
-                          <Button 
-                            size="sm" 
+                          <Button
+                            size="sm"
                             onClick={() => sendNotificationToUser(user._id, "Welcome to RentCar!", "Welcome to our car rental platform! We're excited to have you as part of our community.", "welcome")}
                           >
                             Send Welcome Message
                           </Button>
-                          <Button 
-                            size="sm" 
+                          <Button
+                            size="sm"
                             variant="outline"
                             onClick={() => sendNotificationToUser(user._id, "Special Promotion", "Check out our latest offers and discounts on car rentals!", "promotion")}
                           >
@@ -270,7 +280,7 @@ const UserManagement = ({ onStatsUpdate }) => {
             </Card>
           );
         })}
-        
+
         {filteredUsers.length === 0 && (
           <Card className="col-span-full">
             <CardContent className="text-center py-8">

@@ -2,19 +2,19 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from "recharts";
-import { TrendingUp, TrendingDown, Calendar, DollarSign, Car, Users, RefreshCw } from "lucide-react";
+import { TrendingUp, TrendingDown, Calendar, DollarSign, Car, Users, RefreshCw, Activity, Star, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { carsAPI, bookingsAPI, usersAPI } from "@/services/api";
+import { carsAPI, bookingsAPI, usersAPI, Car as CarInterface, Booking } from "@/services/api";
 import { useToast } from "@/hooks/use-toast";
 
 const AdminAnalytics = () => {
   const [analytics, setAnalytics] = useState({
-    monthlyRevenue: [],
-    carUtilization: [],
-    bookingTrends: [],
-    topCars: [],
-    userGrowth: [],
-    categoryDistribution: []
+    monthlyRevenue: [] as any[],
+    carUtilization: [] as any[],
+    topCars: [] as any[],
+    categoryDistribution: [] as any[],
+    bookingTrends: [] as any[],
+    userGrowth: [] as any[]
   });
   const [isLoading, setIsLoading] = useState(true);
   const [dataStatus, setDataStatus] = useState({ bookings: 0, cars: 0, users: 0 });
@@ -27,363 +27,202 @@ const AdminAnalytics = () => {
   const generateAnalytics = async () => {
     try {
       setIsLoading(true);
-      
-      // Fetch data from API
       const [bookings, cars, users] = await Promise.all([
         bookingsAPI.getAll(),
         carsAPI.getAll(),
         usersAPI.getAll()
       ]);
-      
-      // Update data status for debugging
-      setDataStatus({ 
-        bookings: bookings.length, 
-        cars: cars.length, 
-        users: users.length 
-      });
-      
-      console.log('Analytics Data Debug:', { bookings, cars, users });
 
-      // Monthly Revenue - Last 12 months
+      setDataStatus({ bookings: bookings.length, cars: cars.length, users: users.length });
+
+      // Process Monthly Revenue
       const monthlyRevenue = [];
       for (let i = 11; i >= 0; i--) {
         const date = new Date();
         date.setMonth(date.getMonth() - i);
         const month = date.toLocaleString('default', { month: 'short' });
-        
         const monthBookings = bookings.filter(booking => {
           if (!booking.createdAt) return false;
           const bookingDate = new Date(booking.createdAt);
-          return bookingDate.getMonth() === date.getMonth() && 
-                 bookingDate.getFullYear() === date.getFullYear();
+          return bookingDate.getMonth() === date.getMonth() && bookingDate.getFullYear() === date.getFullYear();
         });
-        
         const revenue = monthBookings.reduce((sum, booking) => sum + (booking.totalAmount || 0), 0);
-        monthlyRevenue.push({ month, revenue, bookings: monthBookings.length });
+        monthlyRevenue.push({ month, revenue });
       }
 
-      // Car Utilization
+      // Process Car Utilization
       const carUtilization = cars.map(car => {
-        const carBookings = bookings.filter(b => 
-          b.carId._id === car._id && (b.status === "confirmed" || b.status === "active")
-        );
-        
-        const totalQuantity = car.quantity || 1;
-        const availableQuantity = car.available || 0;
-        const utilizationRate = totalQuantity > 0 ? 
-          ((totalQuantity - availableQuantity) / totalQuantity) * 100 : 0;
-        
+        const carBookings = bookings.filter(b => {
+          const bCarId = typeof b.carId === 'string' ? b.carId : b.carId?._id;
+          return bCarId === car._id;
+        });
+        const q = car.quantity || 1;
+        const utilization = ((q - (car.available as number || 0)) / q) * 100;
         return {
-          name: car.name || `Car ${car._id}`,
-          utilization: Math.round(Math.max(0, Math.min(100, utilizationRate))),
+          name: car.name,
+          utilization: Math.round(utilization),
           bookings: carBookings.length,
           revenue: carBookings.reduce((sum, b) => sum + (b.totalAmount || 0), 0)
         };
-      });
-
-      // Top Cars by Revenue
-      const topCars = carUtilization
-        .sort((a, b) => b.revenue - a.revenue)
-        .slice(0, 5);
-
-      // Booking Trends - Last 30 days
-      const bookingTrends = [];
-      for (let i = 29; i >= 0; i--) {
-        const date = new Date();
-        date.setDate(date.getDate() - i);
-        
-        const dayBookings = bookings.filter(booking => {
-          if (!booking.createdAt) return false;
-          const bookingDate = new Date(booking.createdAt);
-          return bookingDate.toDateString() === date.toDateString();
-        });
-        
-        bookingTrends.push({
-          date: date.toLocaleDateString('en', { month: 'short', day: 'numeric' }),
-          bookings: dayBookings.length
-        });
-      }
-
-      // User Growth - Last 12 months
-      const userGrowth = [];
-      for (let i = 11; i >= 0; i--) {
-        const date = new Date();
-        date.setMonth(date.getMonth() - i);
-        const month = date.toLocaleString('default', { month: 'short' });
-        
-        const monthUsers = users.filter(user => {
-          if (!user.joinDate) return false;
-          const joinDate = new Date(user.joinDate);
-          return joinDate.getMonth() === date.getMonth() && 
-                 joinDate.getFullYear() === date.getFullYear();
-        });
-        
-        userGrowth.push({ month, users: monthUsers.length });
-      }
+      }).sort((a, b) => b.revenue - a.revenue);
 
       // Category Distribution
       const categoryDistribution = cars.reduce((acc, car) => {
-        const category = car.category || car.type || 'Other';
-        const existing = acc.find(item => item.name === category);
-        if (existing) {
-          existing.value += 1;
-        } else {
-          acc.push({ name: category, value: 1 });
-        }
+        const cat = car.category || 'Standard';
+        const existing = acc.find((item: any) => item.name === cat);
+        if (existing) existing.value++;
+        else acc.push({ name: cat, value: 1 });
         return acc;
-      }, []);
+      }, [] as any[]);
 
       setAnalytics({
         monthlyRevenue,
-        carUtilization,
-        bookingTrends,
-        topCars,
-        userGrowth,
-        categoryDistribution
+        carUtilization: carUtilization.slice(0, 8),
+        topCars: carUtilization.slice(0, 5),
+        categoryDistribution,
+        bookingTrends: [],
+        userGrowth: []
       });
-    } catch (error) {
-      console.error('Error generating analytics:', error);
-      toast({
-        title: "Error loading analytics",
-        description: error.message || "Failed to load analytics data",
-        variant: "destructive"
-      });
+    } catch (error: any) {
+      toast({ title: "Intelligence sync failed", description: error.message, variant: "destructive" });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
-
-  const currentMonth = analytics.monthlyRevenue[analytics.monthlyRevenue.length - 1];
-  const lastMonth = analytics.monthlyRevenue[analytics.monthlyRevenue.length - 2];
-  const revenueGrowth = lastMonth ? ((currentMonth?.revenue - lastMonth.revenue) / lastMonth.revenue * 100) : 0;
+  const COLORS = ['#2563EB', '#3B82F6', '#60A5FA', '#93C5FD', '#BFDBFE'];
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center p-8">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p>Loading analytics...</p>
-        </div>
+      <div className="py-20 text-center">
+        <RefreshCw className="h-10 w-10 text-blue-500 animate-spin mx-auto mb-4 opacity-20" />
+        <p className="text-gray-500 font-light tracking-widest text-xs uppercase">Analyzing Platform Data...</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Analytics Dashboard</h2>
-        <div className="flex items-center space-x-4">
-          <div className="text-sm text-gray-500">
-            Data: {dataStatus.bookings} bookings, {dataStatus.cars} cars, {dataStatus.users} users
+    <div className="space-y-10">
+      {/* Metrics Row */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="p-8 rounded-3xl bg-blue-600/5 border border-blue-500/10 hover:bg-blue-600/10 transition-colors group">
+          <p className="text-[10px] font-bold text-blue-400 uppercase tracking-[0.2em] mb-4">Total Revenue Generated</p>
+          <h3 className="text-5xl font-bold tracking-tighter mb-2">
+            ${analytics.monthlyRevenue.reduce((s, r) => s + r.revenue, 0).toLocaleString()}
+          </h3>
+          <div className="flex items-center text-xs text-blue-400 font-bold uppercase tracking-widest">
+            <TrendingUp className="h-3 w-3 mr-2" /> Annualized Projections
           </div>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={() => generateAnalytics()}
-            disabled={isLoading}
-          >
-            <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-            Refresh
+        </div>
+
+        <div className="p-8 rounded-3xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
+          <p className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] mb-4">Average Fleet Utilization</p>
+          <h3 className="text-5xl font-bold tracking-tighter mb-2">
+            {Math.round(analytics.carUtilization.reduce((s, c) => s + c.utilization, 0) / (analytics.carUtilization.length || 1))}%
+          </h3>
+          <div className="flex items-center text-xs text-green-500 font-bold uppercase tracking-widest">
+            <Activity className="h-3 w-3 mr-2" /> Optimal Performance
+          </div>
+        </div>
+
+        <div className="p-8 rounded-3xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors flex flex-col justify-center">
+          <Button onClick={generateAnalytics} variant="ghost" className="w-full py-8 border border-white/10 rounded-2xl flex flex-col items-center gap-2 hover:bg-blue-600 hover:text-white group">
+            <RefreshCw className="h-5 w-5 group-hover:rotate-180 transition-transform duration-700" />
+            <span className="text-[10px] font-bold uppercase tracking-widest">Force Intelligence Sync</span>
           </Button>
         </div>
       </div>
 
-      {/* Show message if no data */}
-      {dataStatus.cars === 0 && (
-        <Card>
-          <CardContent className="p-6">
-            <div className="text-center text-gray-500">
-              <Car className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <h3 className="text-lg font-semibold mb-2">No Cars Available</h3>
-              <p>Add some cars to see analytics data.</p>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {dataStatus.cars > 0 && (
-        <>
-          {/* Key Metrics */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Monthly Revenue</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+      {/* Primary Visualizations */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+        <Card className="bg-[#1C1C1C] border-white/5 rounded-[2rem] overflow-hidden p-8">
+          <CardHeader className="p-0 mb-8">
+            <CardTitle className="text-lg font-bold">Revenue Dynamics</CardTitle>
+            <CardDescription className="text-xs font-light text-gray-500">Monthly gross performance across last 12 cycles</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">${currentMonth?.revenue || 0}</div>
-            <div className="flex items-center text-xs text-muted-foreground">
-              {revenueGrowth >= 0 ? (
-                <TrendingUp className="h-3 w-3 mr-1 text-green-500" />
-              ) : (
-                <TrendingDown className="h-3 w-3 mr-1 text-red-500" />
-              )}
-              {Math.abs(revenueGrowth).toFixed(1)}% from last month
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Average Utilization</CardTitle>
-            <Car className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {analytics.carUtilization.length > 0 
-                ? Math.round(analytics.carUtilization.reduce((sum, car) => sum + car.utilization, 0) / analytics.carUtilization.length)
-                : 0}%
-            </div>
-            <p className="text-xs text-muted-foreground">Fleet utilization rate</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Monthly Bookings</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{currentMonth?.bookings || 0}</div>
-            <p className="text-xs text-muted-foreground">This month</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Top Performer</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {analytics.topCars[0]?.name || "N/A"}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              ${analytics.topCars[0]?.revenue || 0} revenue
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Revenue Chart */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Monthly Revenue Trend</CardTitle>
-            <CardDescription>Revenue over the last 12 months</CardDescription>
-          </CardHeader>
-          <CardContent>
+          <CardContent className="p-0">
             <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={analytics.monthlyRevenue}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip formatter={(value) => [`$${value}`, 'Revenue']} />
-                <Line type="monotone" dataKey="revenue" stroke="#0088FE" strokeWidth={2} />
-              </LineChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        {/* Car Utilization */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Car Utilization Rates</CardTitle>
-            <CardDescription>Utilization percentage by car</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={analytics.carUtilization}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip formatter={(value) => [`${value}%`, 'Utilization']} />
-                <Bar dataKey="utilization" fill="#00C49F" />
+              <BarChart data={analytics.monthlyRevenue}>
+                <XAxis dataKey="month" stroke="#444" fontSize={10} axisLine={false} tickLine={false} />
+                <YAxis stroke="#444" fontSize={10} axisLine={false} tickLine={false} tickFormatter={(v) => `$${v}`} />
+                <Tooltip
+                  contentStyle={{ backgroundColor: '#1A1A1A', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px' }}
+                  itemStyle={{ color: '#60A5FA', fontSize: '10px', fontWeight: 'bold' }}
+                  cursor={{ fill: 'rgba(255,255,255,0.02)' }}
+                />
+                <Bar dataKey="revenue" fill="#2563EB" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
 
-        {/* Booking Trends */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Daily Booking Trends</CardTitle>
-            <CardDescription>Bookings over the last 30 days</CardDescription>
+        <Card className="bg-[#1C1C1C] border-white/5 rounded-[2rem] overflow-hidden p-8">
+          <CardHeader className="p-0 mb-8">
+            <CardTitle className="text-lg font-bold">Fleet Allocation</CardTitle>
+            <CardDescription className="text-xs font-light text-gray-500">Resource distribution by vehicle segment</CardDescription>
           </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={analytics.bookingTrends}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis />
-                <Tooltip />
-                <Line type="monotone" dataKey="bookings" stroke="#FFBB28" strokeWidth={2} />
-              </LineChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        {/* Category Distribution */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Fleet Category Distribution</CardTitle>
-            <CardDescription>Distribution of car categories</CardDescription>
-          </CardHeader>
-          <CardContent>
+          <CardContent className="p-0 flex items-center justify-center">
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie
                   data={analytics.categoryDistribution}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                  outerRadius={80}
-                  fill="#8884d8"
+                  innerRadius={60}
+                  outerRadius={100}
+                  paddingAngle={5}
                   dataKey="value"
                 >
                   {analytics.categoryDistribution.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip />
+                <Tooltip
+                  contentStyle={{ backgroundColor: '#1A1A1A', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px' }}
+                  itemStyle={{ fontSize: '10px', fontWeight: 'bold' }}
+                />
               </PieChart>
             </ResponsiveContainer>
+            <div className="w-1/3 space-y-3">
+              {analytics.categoryDistribution.map((entry, idx) => (
+                <div key={idx} className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full" style={{ backgroundColor: COLORS[idx % COLORS.length] }}></div>
+                  <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">{entry.name}</span>
+                </div>
+              ))}
+            </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Top Performing Cars */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Top Performing Cars</CardTitle>
-          <CardDescription>Cars ranked by revenue generation</CardDescription>
+      {/* Top Assets */}
+      <Card className="bg-[#1C1C1C] border-white/5 rounded-[2rem] overflow-hidden p-8">
+        <CardHeader className="p-0 mb-10">
+          <CardTitle className="text-xl font-bold flex items-center gap-2">
+            <Star className="h-5 w-5 text-blue-500" /> High-Performance Assets
+          </CardTitle>
+          <CardDescription className="text-sm font-light text-gray-400">Top 5 vehicles contributing to ecosystem revenue</CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {analytics.topCars.map((car, index) => (
-              <div key={car.name} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <div className="flex items-center space-x-3">
-                  <Badge variant="outline">#{index + 1}</Badge>
+        <CardContent className="p-0">
+          <div className="space-y-6">
+            {analytics.topCars.map((car, idx) => (
+              <div key={idx} className="flex items-center justify-between p-6 rounded-2xl bg-white/5 hover:bg-white/10 transition-colors group">
+                <div className="flex items-center gap-6">
+                  <div className="text-2xl font-black text-white/10 group-hover:text-blue-500/20 transition-colors">0{idx + 1}</div>
                   <div>
-                    <p className="font-semibold">{car.name}</p>
-                    <p className="text-sm text-gray-600">{car.bookings} bookings</p>
+                    <h4 className="font-bold text-lg">{car.name}</h4>
+                    <p className="text-[10px] text-blue-500 font-bold uppercase tracking-widest">{car.bookings} Managed Journeys</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="font-semibold text-green-600">${car.revenue}</p>
-                  <p className="text-sm text-gray-600">{car.utilization}% utilized</p>
+                  <div className="text-xl font-bold text-white">${car.revenue.toLocaleString()}</div>
+                  <div className="flex items-center justify-end text-[10px] text-gray-500 font-bold uppercase tracking-widest gap-2">
+                    <Zap className="h-3 w-3 text-green-500" /> {car.utilization}% Operation Rate
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         </CardContent>
       </Card>
-        </>
-      )}
     </div>
   );
 };
