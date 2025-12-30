@@ -1,17 +1,9 @@
 {
-  "name": "book-a-ride",
-  "private": true,
-  "version": "1.0.0",
-  "scripts": {
-    "install:all": "npm install --prefix frontend && npm install --prefix server",
-    "dev": "concurrently \"npm run dev --prefix frontend\" \"npm run dev --prefix server\"",
-    "dev:frontend": "npm run dev --prefix frontend",
-    "dev:server": "npm run dev --prefix server",
-    "build": "npm run build --prefix frontend && xcopy /E /I /Y frontend\\dist dist",
-    "vercel-build": "npm run build --prefix frontend && cp -r frontend/dist ./dist",
-    "start": "npm start --prefix server"
-  },
-  "devDependencies": {
-    "concurrently": "^9.1.2"
-  }
+    "name": "car-booking-monorepo",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "build": "cd frontend && npm install && npm run build && cd ../server && npm install",
+        "install-all": "npm install && cd frontend && npm install && cd ../server && npm install"
+    }
 }

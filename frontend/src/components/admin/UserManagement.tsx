@@ -85,7 +85,8 @@ const UserManagement = ({ onStatsUpdate }) => {
         userId,
         title,
         message,
-        type
+        type,
+        isRead: false
       });
 
       toast({
@@ -120,8 +121,8 @@ const UserManagement = ({ onStatsUpdate }) => {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
-          <Users className="h-12 w-12 text-gray-400 mx-auto mb-4 animate-spin" />
-          <p className="text-gray-600">Loading users...</p>
+          <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4 animate-spin" />
+          <p className="text-muted-foreground">Loading users...</p>
         </div>
       </div>
     );
@@ -144,7 +145,7 @@ const UserManagement = ({ onStatsUpdate }) => {
         </CardHeader>
         <CardContent>
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
               placeholder="Search by name or email..."
               value={searchTerm}
@@ -174,24 +175,24 @@ const UserManagement = ({ onStatsUpdate }) => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <div className="flex items-center text-sm text-gray-600">
+                  <div className="flex items-center text-sm text-muted-foreground">
                     <Mail className="h-4 w-4 mr-2" />
                     {user.email}
                   </div>
 
                   {user.phone && (
-                    <div className="flex items-center text-sm text-gray-600">
+                    <div className="flex items-center text-sm text-muted-foreground">
                       <Phone className="h-4 w-4 mr-2" />
                       {user.phone}
                     </div>
                   )}
 
-                  <div className="flex items-center text-sm text-gray-600">
+                  <div className="flex items-center text-sm text-muted-foreground">
                     <Calendar className="h-4 w-4 mr-2" />
                     Joined: {new Date(user.joinDate).toLocaleDateString()}
                   </div>
 
-                  <div className="flex items-center text-sm text-gray-600">
+                  <div className="flex items-center text-sm text-muted-foreground">
                     <Users className="h-4 w-4 mr-2" />
                     {userBookings.length} total bookings
                   </div>
@@ -241,7 +242,7 @@ const UserManagement = ({ onStatsUpdate }) => {
                           <div className="space-y-2">
                             {userBookings.length > 0 ? (
                               userBookings.map((booking, index) => (
-                                <div key={booking.id} className="p-2 bg-gray-50 rounded text-sm">
+                                <div key={booking.id} className="p-2 bg-secondary/30 rounded text-sm">
                                   <p><strong>Booking #{booking.id}</strong></p>
                                   <p>Car: {booking.carName}</p>
                                   <p>Date: {booking.startDate}</p>
@@ -284,9 +285,9 @@ const UserManagement = ({ onStatsUpdate }) => {
         {filteredUsers.length === 0 && (
           <Card className="col-span-full">
             <CardContent className="text-center py-8">
-              <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No users found</h3>
-              <p className="text-gray-600">No users match your search criteria</p>
+              <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-foreground mb-2">No users found</h3>
+              <p className="text-muted-foreground">No users match your search criteria</p>
             </CardContent>
           </Card>
         )}

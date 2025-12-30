@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Calendar, Clock, Users, DollarSign, AlertTriangle } from "lucide-react";
+import { ArrowLeft, Calendar, Clock, Users, DollarSign, AlertTriangle, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { carsAPI, bookingsAPI, User, Car } from "@/services/api";
 import CarLoader from "@/components/ui/CarLoader";
@@ -161,10 +161,10 @@ const BookCar = () => {
 
   if (isLoadingCar || !car || !user) {
     return (
-      <div className="min-h-screen bg-[#0F0F0F] flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <CarLoader className="mb-6" />
-          <p className="text-gray-400 text-lg">Loading car details...</p>
+          <p className="text-muted-foreground text-lg">Loading car details...</p>
         </div>
       </div>
     );
@@ -173,22 +173,22 @@ const BookCar = () => {
   const isUnavailable = typeof car.available === 'number' ? car.available <= 0 : !car.available;
 
   return (
-    <div className="dark min-h-screen bg-[#0F0F0F] text-white">
+    <div className="min-h-screen bg-background text-foreground">
       {/* Decorative Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        <div className="absolute top-[-20%] right-[-10%] w-[60%] h-[60%] bg-blue-600/5 rounded-full blur-[140px]"></div>
-        <div className="absolute bottom-[-20%] left-[-10%] w-[60%] h-[60%] bg-purple-600/5 rounded-full blur-[140px]"></div>
+        <div className="absolute top-[-20%] right-[-10%] w-[60%] h-[60%] bg-primary/5 rounded-full blur-[140px]"></div>
+        <div className="absolute bottom-[-20%] left-[-10%] w-[60%] h-[60%] bg-success/5 rounded-full blur-[140px]"></div>
       </div>
       {/* Header */}
-      <header className="bg-[#0F0F0F]/80 backdrop-blur-md border-b border-white/5 sticky top-0 z-40 relative">
+      <header className="bg-background/80 backdrop-blur-md border-b border-border sticky top-0 z-40 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link to="/cars" className="flex items-center space-x-2 group">
               <ArrowLeft className="h-5 w-5 group-hover:-translate-x-1 transition-transform" />
-              <img src="/Logo.jpg" alt="Logo" className="h-10 w-10 rounded-xl" />
+              <img src="/Logo.jpg" alt="Logo" className="h-10 w-10 rounded-xl shadow-sm" />
             </Link>
             <Link to="/dashboard">
-              <Button variant="outline" className="border-white/10 hover:bg-white/5 transition-colors">Dashboard</Button>
+              <Button variant="outline" className="border-border hover:bg-secondary transition-colors">Dashboard</Button>
             </Link>
           </div>
         </div>
@@ -209,10 +209,10 @@ const BookCar = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Car Details */}
-          <Card className="bg-[#161616] border-white/5 shadow-2xl overflow-hidden">
-            <CardHeader>
-              <CardTitle>Book {car.name}</CardTitle>
-              <CardDescription>Complete your booking details</CardDescription>
+          <Card className="bg-card border-border shadow-sm overflow-hidden">
+            <CardHeader className="bg-secondary/30 border-b border-border">
+              <CardTitle className="text-xl font-bold">Book {car.name}</CardTitle>
+              <CardDescription className="text-muted-foreground">Premium Fleet Member</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="aspect-video overflow-hidden rounded-lg mb-4">
@@ -225,17 +225,17 @@ const BookCar = () => {
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
                   <div>
-                    <p className="text-2xl font-bold">${car.pricePerHour}</p>
-                    <p className="text-sm text-gray-600">per hour</p>
+                    <p className="text-2xl font-black text-foreground tracking-tighter">${car.pricePerHour}</p>
+                    <p className="text-xs text-muted-foreground font-semibold">per hour</p>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <Users className="h-4 w-4 text-gray-600" />
+                  <div className="flex items-center space-x-2 font-medium text-muted-foreground">
+                    <Users className="h-4 w-4 text-primary" />
                     <span>{car.seats} seats</span>
                   </div>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {car.features.map((feature) => (
-                    <Badge key={feature} variant="secondary">
+                    <Badge key={feature} variant="secondary" className="bg-secondary text-muted-foreground border-transparent">
                       {feature}
                     </Badge>
                   ))}
@@ -245,55 +245,59 @@ const BookCar = () => {
           </Card>
 
           {/* Booking Form */}
-          <Card className="bg-[#161616] border-white/5 shadow-2xl overflow-hidden">
-            <CardHeader>
-              <CardTitle>Booking Details</CardTitle>
-              <CardDescription>Select your preferred dates and times</CardDescription>
+          <Card className="bg-card border-border shadow-sm overflow-hidden">
+            <CardHeader className="bg-secondary/30 border-b border-border">
+              <CardTitle className="text-xl font-bold">Booking Form</CardTitle>
+              <CardDescription className="text-muted-foreground">Select your preferred window</CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="startDate">Start Date</Label>
+                    <Label htmlFor="startDate" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Start Date</Label>
                     <Input
                       id="startDate"
                       type="date"
                       value={bookingData.startDate}
                       onChange={(e) => handleInputChange("startDate", e.target.value)}
                       required
+                      className="border-border bg-background focus:ring-primary/20"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="startTime">Start Time</Label>
+                    <Label htmlFor="startTime" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Start Time</Label>
                     <Input
                       id="startTime"
                       type="time"
                       value={bookingData.startTime}
                       onChange={(e) => handleInputChange("startTime", e.target.value)}
                       required
+                      className="border-border bg-background"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="endDate">End Date</Label>
+                    <Label htmlFor="endDate" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">End Date</Label>
                     <Input
                       id="endDate"
                       type="date"
                       value={bookingData.endDate}
                       onChange={(e) => handleInputChange("endDate", e.target.value)}
                       required
+                      className="border-border bg-background"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="endTime">End Time</Label>
+                    <Label htmlFor="endTime" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">End Time</Label>
                     <Input
                       id="endTime"
                       type="time"
                       value={bookingData.endTime}
                       onChange={(e) => handleInputChange("endTime", e.target.value)}
                       required
+                      className="border-border bg-background"
                     />
                   </div>
                 </div>
@@ -303,30 +307,33 @@ const BookCar = () => {
                     id="needDriver"
                     checked={bookingData.needDriver}
                     onCheckedChange={(checked) => handleInputChange("needDriver", checked)}
+                    className="border-primary data-[state=checked]:bg-primary"
                   />
-                  <Label htmlFor="needDriver">Need a driver? (+$200/hour)</Label>
+                  <Label htmlFor="needDriver" className="font-semibold text-foreground">Need a driver? (+$200/hour)</Label>
                 </div>
 
                 {bookingData.needDriver && (
                   <div>
-                    <Label htmlFor="driverContact">Driver Contact Number</Label>
+                    <Label htmlFor="driverContact" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Driver Contact Number</Label>
                     <Input
                       id="driverContact"
                       type="tel"
                       value={bookingData.driverContact}
                       onChange={(e) => handleInputChange("driverContact", e.target.value)}
                       required
+                      placeholder="+1 (555) 000-0000"
+                      className="border-border bg-background"
                     />
                   </div>
                 )}
 
-                <div className="border-t pt-4">
-                  <div className="flex justify-between items-center mb-4">
-                    <span className="text-lg font-semibold">Total Amount:</span>
-                    <span className="text-2xl font-bold">${totalAmount}</span>
+                <div className="border-t border-border pt-6 mt-6">
+                  <div className="flex justify-between items-center mb-6">
+                    <span className="text-lg font-bold text-muted-foreground">Total Commitment:</span>
+                    <span className="text-4xl font-black text-primary tracking-tighter">${totalAmount}</span>
                   </div>
-                  <Button type="submit" className="w-full" disabled={isLoading || isUnavailable}>
-                    {isLoading ? "Processing..." : "Confirm Booking"}
+                  <Button type="submit" className="w-full h-14 text-lg font-bold bg-primary hover:bg-primary/90 text-white shadow-md transition-all hover:scale-[1.02] active:scale-95" disabled={isLoading || isUnavailable}>
+                    {isLoading ? <RefreshCw className="mr-2 h-5 w-5 animate-spin" /> : "Confirm Reservation"}
                   </Button>
                 </div>
               </form>

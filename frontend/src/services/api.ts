@@ -9,7 +9,9 @@
 // In Vercel: Add NEXT_PUBLIC_API_BASE_URL to your environment variables
 // Use environment variable for API base URL with safe fallback
 export const API_BASE_URL = import.meta.env.VITE_API_URL ||
-  (typeof window !== 'undefined' && window.location.hostname !== 'localhost' ? '/api' : 'http://localhost:5000/api');
+  (typeof window !== 'undefined' && window.location.hostname === 'localhost'
+    ? 'http://localhost:5000/api'
+    : '/api');
 
 // Default request timeout (10 seconds)
 const DEFAULT_TIMEOUT = 10000;
@@ -38,19 +40,20 @@ export interface User {
   email: string;
   role: string;
   phone?: string;
-  status?: 'active' | 'inactive' | 'pending';
+  status?: 'active' | 'inactive' | 'pending' | 'suspended';
 }
 
 export interface Car {
   _id: string; // Changed from id to _id
   name: string;
-  brand: string;
+  brand?: string;
   model: string;
-  year: number;
-  price: number;
+  year?: number;
+  price?: number;
   pricePerHour: number; // Added
-  available: boolean | number; // Updated to handle number count
+  available: number; // Changed from boolean | number to just number
   image?: string;
+  description?: string; // Added description
   features?: string[]; // Added
   transmission?: string; // Added
   seats?: number; // Added
@@ -79,6 +82,7 @@ export interface Notification {
   title: string;
   message: string;
   isRead: boolean; // Changed from read
+  type?: string; // Added for compatibility
   createdAt: string;
 }
 

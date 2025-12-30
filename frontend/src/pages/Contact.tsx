@@ -3,57 +3,56 @@ import { Mail, Phone, MapPin, Clock, Globe, MessageCircle } from "lucide-react";
 
 const Contact = () => {
   return (
-    <div className="dark min-h-screen bg-[#0F0F0F] text-white py-8">
+    <div className="min-h-screen bg-background text-foreground py-8">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">Contact Us</h1>
-          <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-            Have questions? We're here to help. Get in touch with us through any of these channels.
+          <h1 className="text-4xl font-black tracking-tight mb-4">Contact Relations</h1>
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto font-medium">
+            Dedicated to providing seamless assistance. Reach out to our global support network for any inquiries.
           </p>
         </div>
 
         <div className="max-w-2xl mx-auto space-y-6">
           {/* Contact Information */}
-          <Card className="bg-[#161616] border-white/5 border shadow-2xl">
-            <CardHeader>
-              <CardTitle>Contact Information</CardTitle>
-              <CardDescription className="text-gray-400">
-                Get in touch with us through any of these channels
+          <Card className="bg-card border-border shadow-sm overflow-hidden">
+            <CardHeader className="bg-secondary/30 border-b border-border">
+              <CardTitle className="font-bold">Contact Matrix</CardTitle>
+              <CardDescription className="text-muted-foreground font-medium">
+                Official communication channels
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center space-x-4">
-                <Mail className="w-6 h-6 text-blue-500" />
+                <Mail className="w-6 h-6 text-primary" />
                 <div>
-                  <h3 className="font-semibold">Email</h3>
-                  <p className="text-gray-400">support@carrental.com</p>
+                  <h3 className="font-bold text-foreground">Global Support</h3>
+                  <p className="text-muted-foreground">relations@rentcar.com</p>
                 </div>
               </div>
               <div className="flex items-center space-x-4">
-                <Phone className="w-6 h-6 text-green-500" />
+                <Phone className="w-6 h-6 text-success" />
                 <div>
-                  <h3 className="font-semibold">Phone</h3>
-                  <p className="text-gray-400">+1 (555) 123-4567</p>
+                  <h3 className="font-bold text-foreground">Direct Line</h3>
+                  <p className="text-muted-foreground">+1 (555) RENT-CAR</p>
                 </div>
               </div>
               <div className="flex items-center space-x-4">
                 <MapPin className="w-6 h-6 text-red-500" />
                 <div>
-                  <h3 className="font-semibold">Address</h3>
-                  <p className="text-gray-400">
-                    123 Car Rental Street<br />
-                    New York, NY 10001
+                  <h3 className="font-bold text-foreground">Headquarters</h3>
+                  <p className="text-muted-foreground">
+                    Silicon Valley Tech Plaza<br />
+                    California, CA 94025
                   </p>
                 </div>
               </div>
               <div className="flex items-center space-x-4">
-                <Clock className="w-6 h-6 text-purple-500" />
+                <Clock className="w-6 h-6 text-indigo-500" />
                 <div>
-                  <h3 className="font-semibold">Business Hours</h3>
-                  <p className="text-gray-400">
-                    Monday - Friday: 9:00 AM - 6:00 PM<br />
-                    Saturday: 10:00 AM - 4:00 PM<br />
-                    Sunday: Closed
+                  <h3 className="font-bold text-foreground">Operational Hours</h3>
+                  <p className="text-muted-foreground">
+                    24/7 Concierge Availability for Active Bookings<br />
+                    Office: Mon-Fri 09:00 - 18:00
                   </p>
                 </div>
               </div>
@@ -61,29 +60,27 @@ const Contact = () => {
           </Card>
 
           {/* Additional Contact Information */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Additional Information</CardTitle>
-              <CardDescription>
-                More ways to connect with us
+          <Card className="bg-card border-border shadow-sm overflow-hidden">
+            <CardHeader className="bg-secondary/30 border-b border-border">
+              <CardTitle className="font-bold">Operational Matrix</CardTitle>
+              <CardDescription className="text-muted-foreground font-medium">
+                Global availability protocols
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center space-x-4">
-                <Globe className="w-6 h-6 text-indigo-600" />
+                <Globe className="w-6 h-6 text-primary" />
                 <div>
-                  <h3 className="font-semibold">Website</h3>
-                  <p className="text-gray-600">/</p>
+                  <h3 className="font-bold text-foreground">Digital Infrastructure</h3>
+                  <p className="text-muted-foreground font-medium">fleet.rentcar.mobility</p>
                 </div>
               </div>
               <div className="flex items-center space-x-4">
-                <MessageCircle className="w-6 h-6 text-pink-600" />
+                <MessageCircle className="w-6 h-6 text-pink-500" />
                 <div>
-                  <h3 className="font-semibold">Social Media</h3>
-                  <p className="text-gray-600">
-                    Facebook: @CarRental<br />
-                    Twitter: @CarRental<br />
-                    Instagram: @CarRental
+                  <h3 className="font-bold text-foreground">Global Concierge</h3>
+                  <p className="text-muted-foreground font-medium">
+                    @RentCarGlobal
                   </p>
                 </div>
               </div>

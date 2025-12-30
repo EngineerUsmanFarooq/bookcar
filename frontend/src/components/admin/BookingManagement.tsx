@@ -44,27 +44,27 @@ const BookingManagement = ({ onStatsUpdate }) => {
 
   const filterBookings = () => {
     let filtered = [...bookings];
-    
+
     if (searchTerm) {
-      filtered = filtered.filter(booking => 
+      filtered = filtered.filter(booking =>
         booking.carId?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         booking.userId?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         booking.userId?.email?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-    
+
     if (statusFilter !== "all") {
       filtered = filtered.filter(booking => booking.status === statusFilter);
     }
-    
+
     if (dateFilter) {
-      filtered = filtered.filter(booking => 
+      filtered = filtered.filter(booking =>
         booking.startDate === dateFilter
       );
     }
 
-    
-    
+
+
     setFilteredBookings(filtered);
   };
 
@@ -72,7 +72,7 @@ const BookingManagement = ({ onStatsUpdate }) => {
     try {
       // Add to updating set to show loading state
       setUpdatingBookings(prev => new Set([...prev, bookingId]));
-      
+
       // Optimistically update the UI first
       setBookings(prevBookings =>
         prevBookings.map(booking =>
@@ -81,15 +81,15 @@ const BookingManagement = ({ onStatsUpdate }) => {
             : booking
         )
       );
-      
+
       // Update the server
       await bookingsAPI.update(bookingId, { status: newStatus });
-      
+
       // Only call onStatsUpdate without reloading all bookings
       if (onStatsUpdate) {
         onStatsUpdate();
       }
-      
+
       toast({
         title: "Booking updated",
         description: `Booking status changed to ${newStatus}.`,
@@ -119,10 +119,10 @@ const BookingManagement = ({ onStatsUpdate }) => {
       completed: { variant: "default", icon: CheckCircle, label: "Completed" },
       cancelled: { variant: "destructive", icon: XCircle, label: "Cancelled" }
     };
-    
+
     const config = statusConfig[status] || statusConfig.pending;
     const Icon = config.icon;
-    
+
     return (
       <Badge variant={config.variant}>
         <Icon className="h-3 w-3 mr-1" />
@@ -137,9 +137,10 @@ const BookingManagement = ({ onStatsUpdate }) => {
         userId: booking.userId._id,
         title: "Booking Update",
         message: `Your booking for ${booking.carId?.name} has been updated. Please check your dashboard for details.`,
-        type: "info"
+        type: "info",
+        isRead: false
       });
-      
+
       toast({
         title: "Notification sent",
         description: "Booking update notification sent to user successfully",
@@ -157,7 +158,7 @@ const BookingManagement = ({ onStatsUpdate }) => {
     return (
       <div className="flex justify-center items-center h-32">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
           <p>Loading bookings...</p>
         </div>
       </div>
@@ -170,10 +171,10 @@ const BookingManagement = ({ onStatsUpdate }) => {
         <h2 className="text-2xl font-bold">Booking Management</h2>
         <div className="flex items-center space-x-2">
           <Badge variant="outline">{filteredBookings.length} bookings</Badge>
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             size="sm"
-            onClick={loadBookings} 
+            onClick={loadBookings}
             disabled={loading}
           >
             <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
@@ -193,7 +194,7 @@ const BookingManagement = ({ onStatsUpdate }) => {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
                 placeholder="Search by car or user..."
                 value={searchTerm}
@@ -201,7 +202,7 @@ const BookingManagement = ({ onStatsUpdate }) => {
                 className="pl-10"
               />
             </div>
-            
+
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger>
                 <SelectValue placeholder="Filter by status" />
@@ -214,16 +215,16 @@ const BookingManagement = ({ onStatsUpdate }) => {
                 <SelectItem value="cancelled">Cancelled</SelectItem>
               </SelectContent>
             </Select>
-            
+
             <Input
               type="date"
               value={dateFilter}
               onChange={(e) => setDateFilter(e.target.value)}
               placeholder="Filter by date"
             />
-            
-            <Button 
-              variant="outline" 
+
+            <Button
+              variant="outline"
               onClick={() => {
                 setSearchTerm("");
                 setStatusFilter("all");
@@ -244,8 +245,8 @@ const BookingManagement = ({ onStatsUpdate }) => {
               <div className="flex justify-between items-start">
                 <div className="flex space-x-4">
                   {booking.carId?.image && (
-                    <img 
-                      src={booking.carId.image} 
+                    <img
+                      src={booking.carId.image}
                       alt={booking.carId.name}
                       className="w-16 h-16 object-cover rounded"
                     />
@@ -263,81 +264,81 @@ const BookingManagement = ({ onStatsUpdate }) => {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <p className="text-sm text-gray-600">Rental Period</p>
+                  <p className="text-sm text-muted-foreground">Rental Period</p>
                   <p className="font-semibold">
                     {booking.startDate} {booking.startTime} - {booking.endDate} {booking.endTime}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Total Amount</p>
-                  <p className="font-semibold text-green-600">${booking.totalAmount}</p>
+                  <p className="text-sm text-muted-foreground">Total Amount</p>
+                  <p className="font-semibold text-success">${booking.totalAmount}</p>
                   {booking.needDriver && (
                     <p className="text-xs text-gray-500">Includes driver service</p>
                   )}
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Booking Date</p>
+                  <p className="text-sm text-muted-foreground">Booking Date</p>
                   <p className="font-semibold">
                     {new Date(booking.createdAt).toLocaleDateString()}
                   </p>
                 </div>
               </div>
-              
+
               <div className="flex space-x-2 mt-4">
                 {booking.status === "pending" && (
                   <>
-                    <Button 
-                      size="sm" 
+                    <Button
+                      size="sm"
                       onClick={() => updateBookingStatus(booking._id, "confirmed")}
                       disabled={updatingBookings.has(booking._id)}
                     >
                       {updatingBookings.has(booking._id) ? (
-                        <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white mr-2"></div>
+                        <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-primary mr-2"></div>
                       ) : null}
                       Confirm
                     </Button>
-                    <Button 
-                      size="sm" 
+                    <Button
+                      size="sm"
                       variant="destructive"
                       onClick={() => updateBookingStatus(booking._id, "cancelled")}
                       disabled={updatingBookings.has(booking._id)}
                     >
                       {updatingBookings.has(booking._id) ? (
-                        <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white mr-2"></div>
+                        <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-primary mr-2"></div>
                       ) : null}
                       Cancel
                     </Button>
                   </>
                 )}
-                
+
                 {booking.status === "confirmed" && (
                   <>
-                    <Button 
-                      size="sm" 
+                    <Button
+                      size="sm"
                       onClick={() => updateBookingStatus(booking._id, "completed")}
                       disabled={updatingBookings.has(booking._id)}
                     >
                       {updatingBookings.has(booking._id) ? (
-                        <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white mr-2"></div>
+                        <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-primary mr-2"></div>
                       ) : null}
                       Mark Complete
                     </Button>
-                    <Button 
-                      size="sm" 
+                    <Button
+                      size="sm"
                       variant="destructive"
                       onClick={() => updateBookingStatus(booking._id, "cancelled")}
                       disabled={updatingBookings.has(booking._id)}
                     >
                       {updatingBookings.has(booking._id) ? (
-                        <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white mr-2"></div>
+                        <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-primary mr-2"></div>
                       ) : null}
                       Cancel
                     </Button>
                   </>
                 )}
-                
-                <Button 
-                  size="sm" 
+
+                <Button
+                  size="sm"
                   variant="outline"
                   onClick={() => sendNotification(booking)}
                   disabled={updatingBookings.has(booking._id)}
@@ -348,13 +349,13 @@ const BookingManagement = ({ onStatsUpdate }) => {
             </CardContent>
           </Card>
         ))}
-        
+
         {filteredBookings.length === 0 && (
           <Card>
             <CardContent className="text-center py-8">
-              <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No bookings found</h3>
-              <p className="text-gray-600">No bookings match your current filters</p>
+              <Calendar className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-foreground mb-2">No bookings found</h3>
+              <p className="text-muted-foreground">No bookings match your current filters</p>
             </CardContent>
           </Card>
         )}

@@ -81,11 +81,11 @@ const Register = () => {
   };
 
   return (
-    <div className="dark min-h-screen bg-[#0F0F0F] text-white selection:bg-blue-500/30 flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-background text-foreground selection:bg-primary/30 flex items-center justify-center p-4 relative overflow-hidden">
       {/* Decorative Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        <div className="absolute top-[-20%] right-[-10%] w-[60%] h-[60%] bg-blue-600/5 rounded-full blur-[140px]"></div>
-        <div className="absolute bottom-[-20%] left-[-10%] w-[60%] h-[60%] bg-purple-600/5 rounded-full blur-[140px]"></div>
+        <div className="absolute top-[-20%] right-[-10%] w-[60%] h-[60%] bg-primary/5 rounded-full blur-[140px]"></div>
+        <div className="absolute bottom-[-20%] left-[-10%] w-[60%] h-[60%] bg-success/5 rounded-full blur-[140px]"></div>
       </div>
 
       {/* Header/Logo */}
@@ -93,11 +93,10 @@ const Register = () => {
         <div className="max-w-7xl mx-auto px-4 py-8">
           <Link to="/" className="flex items-center space-x-3 group w-fit">
             <div className="relative">
-              <img src="/Logo.jpg" alt="Logo" className="h-10 w-10 rounded-xl shadow-2xl transition-all group-hover:scale-105" />
-              <div className="absolute inset-0 bg-blue-500/20 rounded-xl filter blur-sm opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <img src="/Logo.jpg" alt="Logo" className="h-10 w-10 rounded-xl shadow-sm" />
             </div>
-            <span className="text-2xl font-bold tracking-tight text-white">
-              Rent<span className="text-blue-500">Car</span>
+            <span className="text-2xl font-bold tracking-tight text-foreground">
+              Rent<span className="text-primary">Car</span>
             </span>
           </Link>
         </div>
@@ -106,98 +105,94 @@ const Register = () => {
       <div className="w-full max-w-2xl relative z-10 transition-all duration-1000 transform scale-100 py-20">
         {/* Welcome Section */}
         <div className="text-center mb-10">
-          <div className="inline-flex items-center space-x-2 bg-blue-500/10 rounded-full px-4 py-1.5 border border-blue-500/20 mb-6">
-            <UserPlus className="h-3.5 w-3.5 text-blue-400" />
-            <span className="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Membership Onboarding</span>
-          </div>
           <h1 className="text-4xl font-bold tracking-tight mb-3">Create <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600">Account</span></h1>
-          <p className="text-gray-500 font-light text-sm">Join our exclusive community of premium mobility enthusiasts.</p>
+          <p className="text-muted-foreground font-medium text-sm">Join our exclusive community of premium mobility enthusiasts.</p>
         </div>
 
         {/* Register Card */}
-        <Card className="bg-[#161616] border-white/5 rounded-[2.5rem] overflow-hidden shadow-2xl">
+        <Card className="bg-card border-border rounded-[2.5rem] overflow-hidden shadow-sm">
           <CardContent className="p-10">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-3">
-                  <Label htmlFor="name" className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Identity</Label>
+                  <Label htmlFor="name" className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest ml-1">Identity</Label>
                   <div className="relative group">
-                    <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-600 group-focus-within:text-blue-500 transition-colors" />
+                    <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
                     <Input
                       id="name"
                       placeholder="Jane Doe"
                       {...register("name")}
-                      className="bg-white/5 border-white/5 h-14 pl-12 rounded-2xl focus:border-blue-500/50 focus:ring-blue-500/20 transition-all text-sm placeholder:text-gray-600"
+                      className="bg-secondary/30 border-border h-14 pl-12 rounded-2xl focus:border-primary/50 focus:ring-primary/20 transition-all text-sm placeholder:text-muted-foreground"
                     />
                   </div>
-                  {errors.name && <p className="text-[10px] text-red-400 font-bold uppercase ml-1">{errors.name.message}</p>}
+                  {errors.name && <p className="text-[10px] text-red-500 font-bold uppercase ml-1">{errors.name.message}</p>}
                 </div>
 
                 <div className="space-y-3">
-                  <Label htmlFor="email" className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Email Authorization</Label>
+                  <Label htmlFor="email" className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest ml-1">Email Authorization</Label>
                   <div className="relative group">
-                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-600 group-focus-within:text-blue-500 transition-colors" />
+                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
                     <Input
                       id="email"
                       placeholder="jane@gmail.com"
                       {...register("email")}
-                      className="bg-white/5 border-white/5 h-14 pl-12 rounded-2xl focus:border-blue-500/50 focus:ring-blue-500/20 transition-all text-sm placeholder:text-gray-600"
+                      className="bg-secondary/30 border-border h-14 pl-12 rounded-2xl focus:border-primary/50 focus:ring-primary/20 transition-all text-sm placeholder:text-muted-foreground"
                     />
                   </div>
-                  {errors.email && <p className="text-[10px] text-red-400 font-bold uppercase ml-1">{errors.email.message}</p>}
+                  {errors.email && <p className="text-[10px] text-red-500 font-bold uppercase ml-1">{errors.email.message}</p>}
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-3">
-                  <Label htmlFor="password" className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Secret Key</Label>
+                  <Label htmlFor="password" className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest ml-1">Secret Key</Label>
                   <div className="relative group">
-                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-600 group-focus-within:text-blue-500 transition-colors" />
+                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
                     <Input
                       id="password"
                       type={showPassword ? "text" : "password"}
                       placeholder="••••••••"
                       {...register("password")}
-                      className="bg-white/5 border-white/5 h-14 pl-12 pr-12 rounded-2xl focus:border-blue-500/50 focus:ring-blue-500/20 transition-all text-sm placeholder:text-gray-600"
+                      className="bg-secondary/30 border-border h-14 pl-12 pr-12 rounded-2xl focus:border-primary/50 focus:ring-primary/20 transition-all text-sm placeholder:text-muted-foreground"
                     />
                     <Button
                       type="button"
                       variant="ghost"
                       size="icon"
-                      className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-600 hover:text-white hover:bg-transparent"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground hover:bg-transparent"
                       onClick={() => setShowPassword(!showPassword)}
                     >
                       {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                     </Button>
                   </div>
-                  {errors.password && <p className="text-[10px] text-red-400 font-bold uppercase ml-1">{errors.password.message}</p>}
+                  {errors.password && <p className="text-[10px] text-red-500 font-bold uppercase ml-1">{errors.password.message}</p>}
                 </div>
 
                 <div className="space-y-3">
-                  <Label htmlFor="confirmPassword" className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Verify Key</Label>
+                  <Label htmlFor="confirmPassword" className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest ml-1">Verify Key</Label>
                   <div className="relative group">
-                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-600 group-focus-within:text-blue-500 transition-colors" />
+                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
                     <Input
                       id="confirmPassword"
                       type="password"
                       placeholder="••••••••"
                       {...register("confirmPassword")}
-                      className="bg-white/5 border-white/5 h-14 pl-12 rounded-2xl focus:border-blue-500/50 focus:ring-blue-500/20 transition-all text-sm placeholder:text-gray-600"
+                      className="bg-secondary/30 border-border h-14 pl-12 rounded-2xl focus:border-primary/50 focus:ring-primary/20 transition-all text-sm placeholder:text-muted-foreground"
                     />
                   </div>
-                  {errors.confirmPassword && <p className="text-[10px] text-red-400 font-bold uppercase ml-1">{errors.confirmPassword.message}</p>}
+                  {errors.confirmPassword && <p className="text-[10px] text-red-500 font-bold uppercase ml-1">{errors.confirmPassword.message}</p>}
                 </div>
               </div>
 
-              <div className="p-6 rounded-2xl bg-white/5 border border-white/5 space-y-4">
-                <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center">
-                  <CheckCircle className="h-3.5 w-3.5 mr-2 text-blue-500" /> Security Standards
+              <div className="p-6 rounded-2xl bg-secondary/30 border border-border space-y-4">
+                <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center">
+                  <CheckCircle className="h-3.5 w-3.5 mr-2 text-primary" /> Security Standards
                 </h4>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   {['8+ Characters', 'Uppercase', 'Numeric', 'Special Char'].map((req, i) => (
                     <div key={i} className="flex items-center gap-2">
-                      <div className="w-1.5 h-1.5 rounded-full bg-blue-500/50"></div>
-                      <span className="text-[9px] font-bold text-gray-500 uppercase tracking-tighter">{req}</span>
+                      <div className="w-1.5 h-1.5 rounded-full bg-primary/50"></div>
+                      <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-tighter">{req}</span>
                     </div>
                   ))}
                 </div>
@@ -205,7 +200,7 @@ const Register = () => {
 
               <Button
                 type="submit"
-                className="w-full h-14 bg-blue-600 hover:bg-blue-700 rounded-2xl font-bold text-sm shadow-xl shadow-blue-500/20 transition-all group active:scale-[0.98]"
+                className="w-full h-14 bg-primary hover:bg-primary/90 text-white rounded-2xl font-bold text-sm shadow-sm transition-all group active:scale-[0.98]"
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -218,16 +213,16 @@ const Register = () => {
               </Button>
             </form>
 
-            <div className="mt-10 pt-8 border-t border-white/5 text-center">
-              <p className="text-gray-500 text-sm font-light">
+            <div className="mt-10 pt-8 border-t border-border text-center">
+              <p className="text-muted-foreground text-sm font-medium">
                 Already registered?{" "}
-                <Link to="/login" className="text-white font-bold hover:text-blue-500 transition-colors">Access Account</Link>
+                <Link to="/login" className="text-primary font-bold hover:text-primary/80 transition-colors">Access Account</Link>
               </p>
             </div>
           </CardContent>
         </Card>
 
-        <p className="mt-8 text-center text-[10px] text-gray-600 uppercase tracking-[0.2em] font-bold">
+        <p className="mt-8 text-center text-[10px] text-muted-foreground uppercase tracking-[0.2em] font-bold">
           &copy; 2025 RentCar Security Protocol. Data Protection Act Compliant.
         </p>
       </div>

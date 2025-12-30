@@ -3,29 +3,29 @@ import { Shield, Clock, Users, Star, Award } from "lucide-react";
 
 const About = () => {
   return (
-    <div className="dark min-h-screen bg-[#0F0F0F] text-white py-8">
+    <div className="min-h-screen bg-background text-foreground py-8">
       <div className="container mx-auto px-4">
         {/* Hero Section */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">About Car Rental</h1>
-          <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-            Your trusted partner in car rental services since 2010. We provide premium vehicles and exceptional service to make your journey memorable.
+          <h1 className="text-4xl font-black tracking-tight mb-4">About RentCar</h1>
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto font-medium">
+            Your trusted partner in premium mobility solutions since 2010. We curate the world's finest vehicles to make every journey extraordinary.
           </p>
         </div>
 
         {/* Mission Section */}
-        <Card className="mb-8 bg-[#161616] border-white/5 border shadow-2xl">
+        <Card className="mb-8 bg-card border-border shadow-sm">
           <CardHeader>
-            <CardTitle className="text-2xl">Our Mission</CardTitle>
-            <CardDescription className="text-gray-400">
-              To provide reliable, affordable, and convenient car rental services while ensuring customer satisfaction and safety.
+            <CardTitle className="text-2xl font-bold">Our Mission</CardTitle>
+            <CardDescription className="text-muted-foreground font-medium">
+              To provide reliable, high-performance, and convenient vehicle access while ensuring uncompromising safety and excellence.
             </CardDescription>
           </CardHeader>
         </Card>
 
         {/* Features Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          <Card className="bg-[#161616] border-white/5 border shadow-2xl group hover:border-blue-500/30 transition-all duration-300">
+          <Card className="bg-card border-border shadow-sm group hover:border-primary/30 transition-all duration-300">
             <CardHeader>
               <img src="/Logo.jpg" alt="Premium Fleet" className="w-12 h-12 rounded mb-4" />
               <CardTitle>Premium Fleet</CardTitle>
@@ -89,20 +89,20 @@ const About = () => {
         {/* Stats Section */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center mb-12">
           <div className="p-4">
-            <h3 className="text-3xl font-bold text-blue-600">10+</h3>
-            <p className="text-gray-600">Years Experience</p>
+            <h3 className="text-3xl font-black text-primary">10+</h3>
+            <p className="text-muted-foreground font-bold uppercase tracking-widest text-xs">Years Experience</p>
           </div>
           <div className="p-4">
-            <h3 className="text-3xl font-bold text-blue-600">50+</h3>
-            <p className="text-gray-600">Vehicle Models</p>
+            <h3 className="text-3xl font-black text-primary">50+</h3>
+            <p className="text-muted-foreground font-bold uppercase tracking-widest text-xs">Vehicle Models</p>
           </div>
           <div className="p-4">
-            <h3 className="text-3xl font-bold text-blue-600">10k+</h3>
-            <p className="text-gray-600">Happy Customers</p>
+            <h3 className="text-3xl font-black text-primary">10k+</h3>
+            <p className="text-muted-foreground font-bold uppercase tracking-widest text-xs">Happy Clients</p>
           </div>
           <div className="p-4">
-            <h3 className="text-3xl font-bold text-blue-600">24/7</h3>
-            <p className="text-gray-600">Customer Support</p>
+            <h3 className="text-3xl font-black text-primary">24/7</h3>
+            <p className="text-muted-foreground font-bold uppercase tracking-widest text-xs">Concierge Support</p>
           </div>
         </div>
       </div>

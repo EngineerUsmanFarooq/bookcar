@@ -134,46 +134,46 @@ const AdminDashboard = () => {
 
   if (!user || isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
           <CarLoader className="mb-6" />
-          <p className="text-gray-600 text-lg animate-pulse">Loading dashboard...</p>
+          <p className="text-muted-foreground text-lg animate-pulse">Loading dashboard...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="dark min-h-screen bg-[#0F0F0F] text-white selection:bg-blue-500/30">
+    <div className="min-h-screen bg-background text-foreground selection:bg-primary/30">
       {/* Decorative Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        <div className="absolute top-[-20%] right-[-10%] w-[60%] h-[60%] bg-blue-600/5 rounded-full blur-[140px]"></div>
-        <div className="absolute bottom-[-20%] left-[-10%] w-[60%] h-[60%] bg-purple-600/5 rounded-full blur-[140px]"></div>
+        <div className="absolute top-[-20%] right-[-10%] w-[60%] h-[60%] bg-primary/1 rounded-full blur-[140px]"></div>
+        <div className="absolute bottom-[-20%] left-[-10%] w-[60%] h-[60%] bg-success/1 rounded-full blur-[140px]"></div>
       </div>
 
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#0F0F0F]/80 backdrop-blur-md border-b border-white/5">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
             <Link to="/" className="flex items-center space-x-3 group">
               <div className="relative">
-                <img src="/Logo.jpg" alt="Logo" className="h-10 w-10 rounded-xl shadow-2xl transition-all group-hover:scale-105" />
-                <div className="absolute inset-0 bg-blue-500/20 rounded-xl filter blur-sm opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <img src="/Logo.jpg" alt="Logo" className="h-10 w-10 rounded-xl shadow-lg transition-all group-hover:scale-105" />
+                <div className="absolute inset-0 bg-primary/20 rounded-xl filter blur-sm opacity-0 group-hover:opacity-100 transition-opacity"></div>
               </div>
-              <span className="text-2xl font-bold tracking-tight text-white">
-                Rent<span className="text-blue-500">Car</span><span className="ml-2 text-[10px] bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full uppercase tracking-widest font-bold">Admin</span>
+              <span className="text-2xl font-bold tracking-tight text-foreground">
+                Rent<span className="text-primary">Car</span><span className="ml-2 text-[10px] bg-primary/20 text-primary px-2 py-0.5 rounded-full uppercase tracking-widest font-bold">Admin</span>
               </span>
             </Link>
 
             <div className="flex items-center space-x-6">
               <div className="flex items-center space-x-4">
                 <div className="text-right hidden sm:block">
-                  <p className="text-sm font-bold text-white">{user?.name}</p>
-                  <p className="text-[10px] text-blue-500 uppercase tracking-widest font-bold">Platform Director</p>
+                  <p className="text-sm font-bold text-foreground">{user?.name}</p>
+                  <p className="text-[10px] text-primary uppercase tracking-widest font-bold">Platform Director</p>
                 </div>
-                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center border border-white/10 shadow-lg">
+                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center border border-white/10 shadow-lg">
                   <Shield className="h-5 w-5 text-white" />
                 </div>
-                <Button variant="ghost" size="icon" className="text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-colors" onClick={handleLogout}>
+                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-red-600 hover:bg-red-50 transition-colors" onClick={handleLogout}>
                   <LogOut className="h-5 w-5" />
                 </Button>
               </div>
@@ -190,93 +190,93 @@ const AdminDashboard = () => {
             <span className="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Platform Insights</span>
           </div>
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
-            System <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600">Overview</span>
+            System <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-400">Overview</span>
           </h1>
-          <p className="text-gray-400 font-light text-lg">Real-time performance metrics and fleet management console.</p>
+          <p className="text-muted-foreground font-medium text-lg">Real-time performance metrics and fleet management console.</p>
         </div>
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-12">
-          <Card className="bg-[#161616] border-white/5 relative overflow-hidden group">
+          <Card className="bg-card border-border relative overflow-hidden group shadow-sm">
             <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:scale-110 transition-transform">
-              <CarIcon className="h-12 w-12 text-blue-500" />
+              <CarIcon className="h-12 w-12 text-primary" />
             </div>
             <CardHeader className="pb-2">
-              <CardDescription className="text-gray-500 uppercase tracking-widest text-[9px] font-bold">Total Fleet</CardDescription>
-              <CardTitle className="text-3xl font-bold text-white mt-1">{animatedStats.totalCars}</CardTitle>
+              <CardDescription className="text-muted-foreground uppercase tracking-widest text-[9px] font-bold">Total Fleet</CardDescription>
+              <CardTitle className="text-3xl font-bold text-foreground mt-1">{animatedStats.totalCars}</CardTitle>
             </CardHeader>
             <CardContent>
-              <Progress value={(animatedStats.totalCars / Math.max(stats.totalCars, 1)) * 100} className="h-1 bg-white/5" indicatorClassName="bg-blue-500" />
+              <Progress value={(animatedStats.totalCars / Math.max(stats.totalCars, 1)) * 100} className="h-1 bg-secondary" indicatorClassName="bg-primary" />
             </CardContent>
           </Card>
 
-          <Card className="bg-[#161616] border-white/5 relative overflow-hidden group">
+          <Card className="bg-card border-border relative overflow-hidden group shadow-sm">
             <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:scale-110 transition-transform">
-              <Calendar className="h-12 w-12 text-green-500" />
+              <Calendar className="h-12 w-12 text-success" />
             </div>
             <CardHeader className="pb-2">
-              <CardDescription className="text-gray-500 uppercase tracking-widest text-[9px] font-bold">Active Bookings</CardDescription>
-              <CardTitle className="text-3xl font-bold text-white mt-1">{animatedStats.activeBookings}</CardTitle>
+              <CardDescription className="text-muted-foreground uppercase tracking-widest text-[9px] font-bold">Active Bookings</CardDescription>
+              <CardTitle className="text-3xl font-bold text-foreground mt-1">{animatedStats.activeBookings}</CardTitle>
             </CardHeader>
             <CardContent>
-              <Progress value={(animatedStats.activeBookings / Math.max(stats.activeBookings, 1)) * 100} className="h-1 bg-white/5" indicatorClassName="bg-green-500" />
+              <Progress value={(animatedStats.activeBookings / Math.max(stats.activeBookings, 1)) * 100} className="h-1 bg-secondary" indicatorClassName="bg-success" />
             </CardContent>
           </Card>
 
-          <Card className="bg-[#161616] border-white/5 relative overflow-hidden group">
+          <Card className="bg-card border-border relative overflow-hidden group shadow-sm">
             <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:scale-110 transition-transform">
-              <Users className="h-12 w-12 text-purple-500" />
+              <Users className="h-12 w-12 text-indigo-500" />
             </div>
             <CardHeader className="pb-2">
-              <CardDescription className="text-gray-500 uppercase tracking-widest text-[9px] font-bold">Total Clients</CardDescription>
-              <CardTitle className="text-3xl font-bold text-white mt-1">{animatedStats.totalUsers}</CardTitle>
+              <CardDescription className="text-muted-foreground uppercase tracking-widest text-[9px] font-bold">Total Clients</CardDescription>
+              <CardTitle className="text-3xl font-bold text-foreground mt-1">{animatedStats.totalUsers}</CardTitle>
             </CardHeader>
             <CardContent>
-              <Progress value={(animatedStats.totalUsers / Math.max(stats.totalUsers, 1)) * 100} className="h-1 bg-white/5" indicatorClassName="bg-purple-500" />
+              <Progress value={(animatedStats.totalUsers / Math.max(stats.totalUsers, 1)) * 100} className="h-1 bg-secondary" indicatorClassName="bg-indigo-500" />
             </CardContent>
           </Card>
 
-          <Card className="bg-[#161616] border-white/5 relative overflow-hidden group">
+          <Card className="bg-card border-border relative overflow-hidden group shadow-sm">
             <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:scale-110 transition-transform">
               <AlertTriangle className="h-12 w-12 text-orange-500" />
             </div>
             <CardHeader className="pb-2">
-              <CardDescription className="text-gray-500 uppercase tracking-widest text-[9px] font-bold">Low Availability</CardDescription>
+              <CardDescription className="text-muted-foreground uppercase tracking-widest text-[9px] font-bold">Low Availability</CardDescription>
               <CardTitle className="text-3xl font-bold text-orange-500 mt-1">{animatedStats.lowStockCars}</CardTitle>
             </CardHeader>
             <CardContent>
-              <Progress value={(animatedStats.lowStockCars / Math.max(stats.lowStockCars, 1)) * 100} className="h-1 bg-white/5" indicatorClassName="bg-orange-500" />
+              <Progress value={(animatedStats.lowStockCars / Math.max(stats.lowStockCars, 1)) * 100} className="h-1 bg-secondary" indicatorClassName="bg-orange-500" />
             </CardContent>
           </Card>
 
-          <Card className="bg-[#161616] border-white/5 relative overflow-hidden group">
+          <Card className="bg-card border-border relative overflow-hidden group shadow-sm">
             <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:scale-110 transition-transform">
-              <DollarSign className="h-12 w-12 text-emerald-500" />
+              <DollarSign className="h-12 w-12 text-success" />
             </div>
             <CardHeader className="pb-2">
-              <CardDescription className="text-gray-500 uppercase tracking-widest text-[9px] font-bold">Total Revenue</CardDescription>
-              <CardTitle className="text-3xl font-bold text-emerald-500 mt-1">${animatedStats.revenue}</CardTitle>
+              <CardDescription className="text-muted-foreground uppercase tracking-widest text-[9px] font-bold">Total Revenue</CardDescription>
+              <CardTitle className="text-3xl font-bold text-success mt-1">${animatedStats.revenue}</CardTitle>
             </CardHeader>
             <CardContent>
-              <Progress value={(animatedStats.revenue / Math.max(stats.revenue, 1)) * 100} className="h-1 bg-white/5" indicatorClassName="bg-emerald-500" />
+              <Progress value={(animatedStats.revenue / Math.max(stats.revenue, 1)) * 100} className="h-1 bg-secondary" indicatorClassName="bg-success" />
             </CardContent>
           </Card>
         </div>
 
         {/* Console Tabs */}
-        <div className="bg-[#161616] border border-white/5 rounded-[2rem] p-8 shadow-2xl">
+        <div className="bg-white border border-border rounded-[2rem] p-8 shadow-sm">
           <Tabs defaultValue="cars" className="w-full">
-            <TabsList className="bg-white/5 border border-white/10 p-1.5 rounded-2xl mb-10 inline-flex">
-              <TabsTrigger value="cars" className="rounded-xl data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all px-8 py-2.5 font-bold text-xs uppercase tracking-widest">
+            <TabsList className="bg-secondary border border-border p-1.5 rounded-2xl mb-10 inline-flex">
+              <TabsTrigger value="cars" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-white transition-all px-8 py-2.5 font-bold text-xs uppercase tracking-widest">
                 <CarIcon className="h-4 w-4 mr-2" /> Fleet Management
               </TabsTrigger>
-              <TabsTrigger value="bookings" className="rounded-xl data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all px-8 py-2.5 font-bold text-xs uppercase tracking-widest">
+              <TabsTrigger value="bookings" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-white transition-all px-8 py-2.5 font-bold text-xs uppercase tracking-widest">
                 <Calendar className="h-4 w-4 mr-2" /> Operations
               </TabsTrigger>
-              <TabsTrigger value="users" className="rounded-xl data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all px-8 py-2.5 font-bold text-xs uppercase tracking-widest">
+              <TabsTrigger value="users" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-white transition-all px-8 py-2.5 font-bold text-xs uppercase tracking-widest">
                 <Users className="h-4 w-4 mr-2" /> User Control
               </TabsTrigger>
-              <TabsTrigger value="analytics" className="rounded-xl data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all px-8 py-2.5 font-bold text-xs uppercase tracking-widest">
+              <TabsTrigger value="analytics" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-white transition-all px-8 py-2.5 font-bold text-xs uppercase tracking-widest">
                 <BarChart3 className="h-4 w-4 mr-2" /> Intelligence
               </TabsTrigger>
             </TabsList>
@@ -300,8 +300,8 @@ const AdminDashboard = () => {
         </div>
       </main>
 
-      <footer className="py-12 border-t border-white/5 text-center mt-20 relative z-10">
-        <p className="text-[10px] text-gray-600 uppercase tracking-[0.2em] font-bold">&copy; 2025 RentCar Enterprise Console. Powered by Advanced Mobility Intelligence.</p>
+      <footer className="py-12 border-t border-border text-center mt-20 relative z-10">
+        <p className="text-[10px] text-muted-foreground uppercase tracking-[0.2em] font-bold">&copy; 2025 RentCar Enterprise Console. Powered by Advanced Mobility Intelligence.</p>
       </footer>
     </div>
   );

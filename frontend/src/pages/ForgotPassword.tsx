@@ -58,24 +58,24 @@ const ForgotPassword = () => {
 
   if (emailSent) {
     return (
-      <div className="dark min-h-screen bg-[#0F0F0F] text-white flex items-center justify-center p-4 relative overflow-hidden">
+      <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-4 relative overflow-hidden">
         {/* Decorative Background */}
         <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-          <div className="absolute top-[-20%] right-[-10%] w-[60%] h-[60%] bg-blue-600/5 rounded-full blur-[140px]"></div>
-          <div className="absolute bottom-[-20%] left-[-10%] w-[60%] h-[60%] bg-purple-600/5 rounded-full blur-[140px]"></div>
+          <div className="absolute top-[-20%] right-[-10%] w-[60%] h-[60%] bg-primary/5 rounded-full blur-[140px]"></div>
+          <div className="absolute bottom-[-20%] left-[-10%] w-[60%] h-[60%] bg-success/5 rounded-full blur-[140px]"></div>
         </div>
         <div className="w-full max-w-md relative z-10">
           <div className="text-center mb-8">
             <Link to="/" className="inline-flex items-center space-x-2">
-              <img src="/Logo.jpg" alt="RentCar Logo" className="h-10 w-10 rounded-xl" />
-              <span className="text-2xl font-bold text-white">Rent<span className="text-blue-500">Car</span></span>
+              <img src="/Logo.jpg" alt="RentCar Logo" className="h-10 w-10 rounded-xl shadow-sm" />
+              <span className="text-2xl font-bold text-foreground">Rent<span className="text-primary">Car</span></span>
             </Link>
           </div>
 
-          <Card className="bg-[#161616] border-white/5 shadow-2xl">
+          <Card className="bg-card border-border shadow-sm">
             <CardHeader>
-              <CardTitle>Check Your Email</CardTitle>
-              <CardDescription className="text-gray-400">
+              <CardTitle className="text-xl font-bold">Check Your Email</CardTitle>
+              <CardDescription className="text-muted-foreground font-medium">
                 We've sent a password reset OTP to {getValues("email")}
               </CardDescription>
             </CardHeader>
@@ -103,11 +103,11 @@ const ForgotPassword = () => {
   }
 
   return (
-    <div className="dark min-h-screen bg-[#0F0F0F] text-white flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-4 relative overflow-hidden">
       {/* Decorative Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        <div className="absolute top-[-20%] right-[-10%] w-[60%] h-[60%] bg-blue-600/5 rounded-full blur-[140px]"></div>
-        <div className="absolute bottom-[-20%] left-[-10%] w-[60%] h-[60%] bg-purple-600/5 rounded-full blur-[140px]"></div>
+        <div className="absolute top-[-20%] right-[-10%] w-[60%] h-[60%] bg-primary/5 rounded-full blur-[140px]"></div>
+        <div className="absolute bottom-[-20%] left-[-10%] w-[60%] h-[60%] bg-success/5 rounded-full blur-[140px]"></div>
       </div>
       <div className="w-full max-w-md relative z-10">
         <div className="text-center mb-8">
@@ -117,10 +117,10 @@ const ForgotPassword = () => {
           </Link>
         </div>
 
-        <Card className="bg-[#161616] border-white/5 shadow-2xl">
+        <Card className="bg-card border-border shadow-sm">
           <CardHeader>
-            <CardTitle>Forgot Password</CardTitle>
-            <CardDescription className="text-gray-400">
+            <CardTitle className="text-xl font-bold">Forgot Password</CardTitle>
+            <CardDescription className="text-muted-foreground font-medium">
               Enter your email address and we'll send you a code to reset your password
             </CardDescription>
           </CardHeader>

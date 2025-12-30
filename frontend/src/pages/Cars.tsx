@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Users, Star, Search, Filter, ArrowLeft } from "lucide-react";
+import { Users, Star, Search, Filter, ArrowLeft, Clock } from "lucide-react";
 import { carsAPI } from "@/services/api";
 import { useToast } from "@/hooks/use-toast";
 import CarLoader from "@/components/ui/CarLoader";
@@ -67,27 +67,27 @@ const Cars = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
           <CarLoader className="mb-6" />
-          <p className="text-gray-600 text-lg">Loading cars...</p>
+          <p className="text-muted-foreground text-lg">Loading fleet...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="dark min-h-screen bg-[#0F0F0F] text-white py-8">
+    <div className="min-h-screen bg-background text-foreground py-8">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-4">
             <Link to="/" className="flex items-center space-x-2">
-              <img src="/Logo.jpg" alt="Logo" className="h-12 w-12 rounded" />
+              <img src="/Logo.jpg" alt="Logo" className="h-12 w-12 rounded shadow-sm" />
             </Link>
           </div>
           {user && (
             <Link to="/dashboard">
-              <Button variant="outline">My Bookings</Button>
+              <Button variant="outline" className="border-border hover:bg-secondary">My Bookings</Button>
             </Link>
           )}
         </div>
@@ -97,16 +97,17 @@ const Cars = () => {
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <Input
-              placeholder="Search cars..."
+              placeholder="Search premium cars..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
+              className="pl-10 h-11 border-border bg-card"
             />
           </div>
           <div className="flex space-x-2">
             <Button
               variant={selectedCategory === "all" ? "default" : "outline"}
               onClick={() => setSelectedCategory("all")}
+              className="h-11 px-6 font-semibold"
             >
               All
             </Button>
@@ -115,6 +116,7 @@ const Cars = () => {
                 key={category.value}
                 variant={selectedCategory === category.value ? "default" : "outline"}
                 onClick={() => setSelectedCategory(category.value)}
+                className="h-11 px-6 font-semibold"
               >
                 {category.label}
               </Button>
@@ -125,7 +127,7 @@ const Cars = () => {
         {/* Cars Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredCars.map((car) => (
-            <Card key={car._id} className="bg-[#161616] border-white/5 overflow-hidden group hover:border-blue-500/30 transition-all duration-500 shadow-2xl">
+            <Card key={car._id} className="bg-card border-border overflow-hidden group hover:border-primary/30 transition-all duration-500 shadow-sm hover:shadow-md">
               <div className="relative aspect-video overflow-hidden">
                 <img
                   src={car.image}
@@ -139,24 +141,26 @@ const Cars = () => {
                 )}
               </div>
               <CardHeader>
-                <CardTitle className="flex justify-between items-center">
+                <CardTitle className="flex justify-between items-center text-xl font-bold">
                   {car.name}
                   <div className="flex items-center space-x-1">
-                    <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                    <span className="text-sm">4.8</span>
+                    <Star className="h-4 w-4 fill-primary text-primary" />
+                    <span className="text-sm font-bold">4.8</span>
                   </div>
                 </CardTitle>
                 <CardDescription>
-                  <div className="flex items-center space-x-4 text-sm text-gray-400">
+                  <div className="flex items-center space-x-4 text-sm text-muted-foreground font-medium">
                     <span className="flex items-center">
-                      <Users className="h-4 w-4 mr-1 text-blue-500" />
+                      <Users className="h-4 w-4 mr-1 text-primary" />
                       {car.seats} seats
                     </span>
-                    <span>{car.transmission}</span>
+                    <span className="flex items-center gap-1">
+                      <Clock className="w-3 h-3" /> {car.transmission}
+                    </span>
                   </div>
-                  <div className="flex flex-wrap gap-1 mt-2">
+                  <div className="flex flex-wrap gap-1 mt-3">
                     {car.features.map((feature) => (
-                      <Badge key={feature} variant="secondary" className="text-xs bg-white/5 border-white/10 text-gray-300">
+                      <Badge key={feature} variant="secondary" className="text-[10px] bg-secondary text-muted-foreground border-transparent px-2 py-0">
                         {feature}
                       </Badge>
                     ))}
@@ -164,14 +168,14 @@ const Cars = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center pt-2">
                   <div>
-                    <p className="text-2xl font-bold uppercase tracking-tighter">${car.pricePerHour}</p>
-                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">per hour</p>
+                    <p className="text-2xl font-black text-foreground tracking-tighter">${car.pricePerHour}</p>
+                    <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">per hour</p>
                   </div>
                   {user ? (
                     <Link to={`/book/${car._id}`}>
-                      <Button disabled={car.available === 0}>
+                      <Button disabled={car.available === 0} className="bg-primary hover:bg-primary/90 text-white shadow-sm px-6">
                         Book Now
                       </Button>
                     </Link>
@@ -186,16 +190,16 @@ const Cars = () => {
           ))}
 
           {filteredCars.length === 0 && (
-            <Card className="col-span-full">
-              <CardContent className="text-center py-8">
-                <div className="text-gray-400 mx-auto mb-4">
+            <Card className="col-span-full border-dashed border-2 bg-secondary/10">
+              <CardContent className="text-center py-16">
+                <div className="text-muted-foreground mx-auto mb-4">
                   <svg className="h-12 w-12" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <circle cx="12" cy="12" r="10" strokeWidth="2" />
                     <path d="M12 6v6l4 2" strokeWidth="2" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-2">No cars found</h3>
-                <p className="text-gray-400">No cars match your search criteria</p>
+                <h3 className="text-xl font-bold text-foreground mb-2">No vehicles found</h3>
+                <p className="text-muted-foreground">Adjust your search or filter to find your perfect car.</p>
               </CardContent>
             </Card>
           )}

@@ -73,31 +73,31 @@ const VerifyOTP = () => {
   };
 
   return (
-    <div className="dark min-h-screen bg-[#0F0F0F] text-white flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-4 relative overflow-hidden">
       {/* Decorative Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        <div className="absolute top-[-20%] right-[-10%] w-[60%] h-[60%] bg-blue-600/5 rounded-full blur-[140px]"></div>
-        <div className="absolute bottom-[-20%] left-[-10%] w-[60%] h-[60%] bg-purple-600/5 rounded-full blur-[140px]"></div>
+        <div className="absolute top-[-20%] right-[-10%] w-[60%] h-[60%] bg-primary/5 rounded-full blur-[140px]"></div>
+        <div className="absolute bottom-[-20%] left-[-10%] w-[60%] h-[60%] bg-success/5 rounded-full blur-[140px]"></div>
       </div>
       <div className="w-full max-w-md relative z-10">
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center space-x-2">
-            <img src="/Logo.jpg" alt="RentCar Logo" className="h-10 w-10 rounded-xl" />
-            <span className="text-2xl font-bold text-white">Rent<span className="text-blue-500">Car</span></span>
+            <img src="/Logo.jpg" alt="RentCar Logo" className="h-10 w-10 rounded-xl shadow-sm" />
+            <span className="text-2xl font-bold text-foreground">Rent<span className="text-primary">Car</span></span>
           </Link>
         </div>
 
-        <Card className="bg-[#161616] border-white/5 shadow-2xl">
+        <Card className="bg-card border-border shadow-sm">
           <CardHeader>
-            <CardTitle>Verify Your Email</CardTitle>
-            <CardDescription className="text-gray-400">
+            <CardTitle className="text-xl font-bold">Verify Your Email</CardTitle>
+            <CardDescription className="text-muted-foreground font-medium">
               We've sent a 6-digit OTP to {email}. Please enter it below to complete your registration.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="otp">Enter OTP</Label>
+                <Label htmlFor="otp" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Enter OTP</Label>
                 <Input
                   id="otp"
                   type="text"
@@ -105,7 +105,7 @@ const VerifyOTP = () => {
                   value={otp}
                   onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
                   maxLength={6}
-                  className="text-center text-2xl tracking-widest"
+                  className="text-center text-3xl font-black tracking-[0.5em] h-16 border-border bg-secondary/30 focus:ring-primary/20"
                   required
                 />
               </div>
@@ -115,21 +115,21 @@ const VerifyOTP = () => {
             </form>
 
             <div className="mt-6 text-center space-y-2">
-              <p className="text-sm text-gray-400">
+              <p className="text-sm text-muted-foreground font-medium">
                 Didn't receive the OTP?{" "}
                 <Button
                   variant="link"
-                  className="p-0 h-auto text-blue-500 hover:text-blue-400 transition-colors"
+                  className="p-0 h-auto text-primary hover:text-primary/80 transition-colors font-bold"
                   onClick={handleResendOTP}
                   disabled={resendLoading}
                 >
                   {resendLoading ? "Sending..." : "Resend OTP"}
                 </Button>
               </p>
-              <p className="text-sm text-gray-400">
+              <p className="text-sm text-muted-foreground">
                 <Button
                   variant="link"
-                  className="p-0 h-auto text-gray-400 hover:text-white transition-colors"
+                  className="p-0 h-auto text-muted-foreground hover:text-foreground transition-colors font-semibold"
                   onClick={() => navigate("/register")}
                 >
                   Back to Registration
